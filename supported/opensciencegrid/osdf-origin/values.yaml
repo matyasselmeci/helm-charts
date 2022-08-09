@@ -11,14 +11,14 @@ Instance: ""
 hostCertSecret:
 
 Site:
-  # The name that the cache will use for itself ehen reporting to OSG 
+  # The name that the cache will use for itself when reporting to OSG
   # infrastructure
   Name: "stashcache"
 
 StashCache:
-  # The directory on the host system in which the cache should store its data. 
-  # If unspecified, ephemeral storage will be used, meaning that the cache 
-  # contents will be lost any time the application is restarted. 
+  # The directory on the host system in which the cache should store its data.
+  # If unspecified, ephemeral storage will be used, meaning that the cache
+  # contents will be lost any time the application is restarted.
   CacheDirectory:
   # Space usage
   HighWaterMark: 0.95

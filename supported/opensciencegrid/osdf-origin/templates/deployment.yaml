@@ -13,7 +13,7 @@ spec:
       app: {{ template "osdf-origin-public.name" . }}
       release: {{ .Release.Name }}
       instance: {{ .Values.Instance | quote }}
-    
+
   template:
     metadata:
       labels:
@@ -26,9 +26,9 @@ spec:
       - name: xcache-namespace
         persistentVolumeClaim:
           claimName: {{ .Values.Origin.DataVolume }}
-      
+
       # TODO copy host cert/key stuff from osg-hosted-ce
-      
+
       containers:
         - name: origin
           image: "{{ .Values.Containers.Origin.Image }}"
