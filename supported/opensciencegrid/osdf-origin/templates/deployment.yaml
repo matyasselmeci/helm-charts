@@ -27,7 +27,18 @@ spec:
         persistentVolumeClaim:
           claimName: {{ .Values.Origin.DataVolume }}
 
-      # TODO copy host cert/key stuff from osg-hosted-ce
+      {{ if .Values.HostCredentials.HostCertKeySecret }}
+      - name: hostcertkey
+        secret:
+          secretName: {{ .Values.HostCredentials.HostCertKeySecret }}
+          items:
+          - key: tls.crt
+            path: hostcert.pem
+            mode: 0o644
+          - key: tls.key
+            path: hostkey.pem
+            mode: 0o400
+      {{ end }}
 
       containers:
         - name: origin
@@ -62,3 +73,11 @@ spec:
           volumeMounts:
             - mountPath: /xcache/namespace
               name: xcache-namespace
+            {{ if .Values.HostCredentials.HostCertKeySecret }}
+            - mountPath: /etc/grid-security/hostcert.pem
+              name: hostcertkey
+              subPath: tls.crt
+            - mountPath: /etc/grid-security/hostkey.pem
+              name: hostcertkey
+              subPath: tls.key
+            {{ end }}

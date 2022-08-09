@@ -1,45 +1,36 @@
 # Label for this particular deployed instance
-# Results in a name like "stashcache-[Instance]"
+# Results in a name like "osdf-origin-public-[Instance]"
 Instance: ""
 
+Topology:
+  ResourceName: "TestOrigin"
+  FQDN: "testorigin.example.net"
+
+# TODO handle multiple exports somehow
+Origin:
+  MainExport: "/VONAME/PUBLIC"
+  DataVolume: NAME_OF_ORIGIN_PVC
+
 # Host Certificate and Key
+# TODO Implement Let's Encrypt support
 # The keys contained in the secret must be:
-#    hostcert.pem
-#    hostkey.pem
+#    tls.crt
+#    tls.key
 # run 'slate secret create --help' for usage
-# Leaving this as the empty string will disable the authenticated cache.
-hostCertSecret:
+# Leaving this empty will disable reporting to the central collector.
+HostCredentials:
+  # Name of the secret containing a host key and certificate in
+  # "tls.key" and "tls.crt", respectively.
+  HostCertKeySecret: null
 
-Site:
-  # The name that the cache will use for itself when reporting to OSG
-  # infrastructure
-  Name: "stashcache"
+Resources:
+  CPU: 2
+  Memory: 1Gi
 
-StashCache:
-  # The directory on the host system in which the cache should store its data.
-  # If unspecified, ephemeral storage will be used, meaning that the cache
-  # contents will be lost any time the application is restarted.
-  CacheDirectory:
-  # Space usage
-  HighWaterMark: 0.95
-  LowWaterMark: 0.80
-  # The amount of memory the cache is allowed to use (in GB)
-  RamSize: 1g
-  # Minimal chunk size that will be prefetched/cached.
-  BlockSize: 1M
-  # to prefetch chunks that were not requested
-  Prefetch: 0
-  # Authorization settings for the un-authenticated cache interface
-  authfileNoAuth: u * / rl
-  # Authorization settings for the authenticated cache interface
-  authfileAuth: u * / rl
-  # Robots policy configuration
-  stashcacheRobots: |-
-    User-agent: *
-    Disallow: /
-
-ContainerTags:
-  StashCache: fresh
+Containers:
+  Origin:
+    Image: opensciencegrid/stash-origin:3.6-release
+    ImagePullPolicy: Always
 
 ### SLATE-START ###
 SLATE:
