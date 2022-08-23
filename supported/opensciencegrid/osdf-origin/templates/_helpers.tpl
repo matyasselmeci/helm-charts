@@ -31,8 +31,3 @@ Create chart name and version as used by the chart label.
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
-{{- define "osdf-origin-public.extraexports" -}}
-{{- range $nindex, $ndir := .Values.Origin.ExtraExports -}}
-{{- printf "all.export %s\n" $ndir }}
-{{- end -}}
-{{- end -}}

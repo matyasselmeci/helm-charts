@@ -8,8 +8,16 @@ Topology:
 
 # TODO handle multiple exports somehow
 Origin:
-  MainExport: "/VONAME/PUBLIC"
-  DataVolume: NAME_OF_ORIGIN_PVC
+  MainExport:
+    Namespace: "/VONAME/PUBLIC"
+    DataVolume: NAME_OF_ORIGIN_PVC
+  ExtraExports:
+    - Name: export1
+      Namespace: "/export1"
+      DataVolume: NAME_OF_EXPORT1_PVC
+    - Name: export2
+      Namespace: "/export2"
+      DataVolume: NAME_OF_EXPORT2_PVC
 
 # Host Certificate and Key
 # TODO Implement Let's Encrypt support

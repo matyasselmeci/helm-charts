@@ -25,7 +25,14 @@ spec:
       volumes:
       - name: xcache-namespace
         persistentVolumeClaim:
-          claimName: {{ .Values.Origin.DataVolume }}
+          claimName: {{ .Values.Origin.MainExport.DataVolume }}
+      {{ if .Values.Origin.ExtraExports }}
+      {{- range .Values.Origin.ExtraExports }}
+      - name: {{ .Name }}
+        persistentVolumeClaim:
+          claimName: {{ .DataVolume }}
+      {{- end }}
+      {{ end }}
 
       {{ if .Values.HostCredentials.HostCertKeySecret }}
       - name: hostcertkey
@@ -52,7 +59,7 @@ spec:
           - name: XC_ROOTDIR
             value: "/xcache/namespace"
           - name: XC_ORIGINEXPORT
-            value: "{{ .Values.Origin.MainExport }}"
+            value: "{{ .Values.Origin.MainExport.Namespace }}"
 
           resources:
             requests:

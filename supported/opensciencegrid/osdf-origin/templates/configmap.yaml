@@ -1,0 +1,17 @@
+{{ if .Values.Origin.ExtraExports }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "osdf-origin-public.fullname" . }}
+  labels:
+    app: {{ template "osdf-origin-public.name" . }}
+    release: {{ .Release.Name }}
+    instance: {{ .Values.Instance | quote }}
+data:
+  extra_exports_cfg: |-
+    {{ range .Values.Origin.ExtraExports -}}
+    {{ printf "# Extra export %s, volume %s" .Name .DataVolume }}
+    {{ printf "all.export %s\n" .Namespace }}
+    {{ end }}
+{{ end }}
+
