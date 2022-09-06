@@ -9,9 +9,21 @@ metadata:
     instance: {{ .Values.Instance | quote }}
 data:
   extra_exports_cfg: |-
-    {{ range .Values.Origin.ExtraExports -}}
-    {{ printf "# Extra export %s, volume %s" .Name .DataVolume }}
-    {{ printf "all.export %s\n" .Namespace }}
+    {{ if .Values.PublicExports.ExtraExports -}}
+    if named stash-origin
+    {{ range .Values.PublicExports.ExtraExports -}}
+    {{ printf "  # Extra export %s, volume %s" .Name .DataVolume }}
+    {{ printf "  all.export %s\n" .Namespace }}
+    {{ end }}
+    fi
+    {{ end }}
+    {{ if .Values.AuthExports.ExtraExports -}}
+    if named stash-origin-auth
+    {{ range .Values.AuthExports.ExtraExports -}}
+    {{ printf "  # Extra export %s, volume %s" .Name .DataVolume }}
+    {{ printf "  all.export %s\n" .Namespace }}
+    {{ end }}
+    fi
     {{ end }}
 {{ end }}
 

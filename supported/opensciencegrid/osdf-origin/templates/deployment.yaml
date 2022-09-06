@@ -25,9 +25,16 @@ spec:
       volumes:
       - name: xcache-namespace
         persistentVolumeClaim:
-          claimName: {{ .Values.Origin.MainExport.DataVolume }}
-      {{ if .Values.Origin.ExtraExports }}
-      {{- range .Values.Origin.ExtraExports }}
+          claimName: {{ .Values.PublicExports.MainExport.DataVolume }}
+      {{ if .Values.PublicExports.ExtraExports }}
+      {{- range .Values.PublicExports.ExtraExports }}
+      - name: {{ .Name }}
+        persistentVolumeClaim:
+          claimName: {{ .DataVolume }}
+      {{- end }}
+      {{ end }}
+      {{ if .Values.AuthExports.ExtraExports }}
+      {{- range .Values.AuthExports.ExtraExports }}
       - name: {{ .Name }}
         persistentVolumeClaim:
           claimName: {{ .DataVolume }}
@@ -64,8 +71,17 @@ spec:
             value: "{{ .Values.Topology.FQDN }}"
           - name: XC_ROOTDIR
             value: "/xcache/namespace"
+        {{ if .Values.PublicExports.MainExport.Namespace }}
+          - name: XC_PUBLIC_ORIGIN_EXPORT
+            value: "{{ .Values.PublicExports.MainExport.Namespace }}"
+          # for image versions that don't support XC_PUBLIC_ORIGIN_EXPORT
           - name: XC_ORIGINEXPORT
-            value: "{{ .Values.Origin.MainExport.Namespace }}"
+            value: "{{ .Values.PublicExports.MainExport.Namespace }}"
+        {{ end }}
+        {{ if .Values.AuthExports.MainExport.Namespace }}
+          - name: XC_AUTH_ORIGIN_EXPORT
+            value: "{{ .Values.AuthExports.MainExport.Namespace }}"
+        {{ end }}
 
           resources:
             requests:
@@ -84,6 +100,7 @@ spec:
               hostPort: 1094
               protocol: TCP
           volumeMounts:
+          # TODO Handle multiple exports
             - mountPath: /xcache/namespace
               name: xcache-namespace
             {{ if .Values.HostCredentials.HostCertKeySecret }}

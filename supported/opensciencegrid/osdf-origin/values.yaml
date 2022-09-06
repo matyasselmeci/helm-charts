@@ -7,7 +7,7 @@ Topology:
   FQDN: "testorigin.example.net"
 
 # TODO handle multiple exports somehow
-Origin:
+PublicExports:
   MainExport:
     Namespace: "/VONAME/PUBLIC"
     DataVolume: NAME_OF_ORIGIN_PVC
@@ -18,6 +18,15 @@ Origin:
   #   - Name: export2
   #     Namespace: "/export2"
   #     DataVolume: NAME_OF_EXPORT2_PVC
+
+# AuthExports:
+#   MainExport:
+#     Namespace: "/VONAME/PROTECTED"
+#     DataVolume: NAME_OF_ORIGIN_PVC
+#   # ExtraExports
+#   #   - Name: export1
+#   #     Namespace: "/export1"
+#   #     DataVolume: NAME_OF_EXPORT1_PVC
 
 # Host Certificate and Key
 # TODO Implement Let's Encrypt support
