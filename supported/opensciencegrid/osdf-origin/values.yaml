@@ -7,6 +7,7 @@ Topology:
   FQDN: "testorigin.example.net"
 
 # TODO handle multiple exports somehow
+# TODO I should separate exports from volumes
 PublicExports:
   MainExport:
     Namespace: "/VONAME/PUBLIC"
