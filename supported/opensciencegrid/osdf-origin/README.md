@@ -29,6 +29,9 @@ $ slate app install osdf-origin-public --group <group-name> --cluster <cluster-n
 | Origin.ExtraExports | A list of extra directories to export | |
 | Resources.CPU | CPUs to request | 2 |
 | Resources.Memory | Memory to request | 1Gi |
-| Containers.Origin.Image | The image to use for the origin container | hub.opensciencegrid.org/opensciencegrid/stash-origin:3.6-release |
+| Containers.Origin.Tag | The tag of the "opensciencegrid/stash-origin" image to use for the origin container | 3.6-release |
+| Containers.Origin.Registry | The image registry to pull from (note 1) | hub.opensciencegrid.org |
 | Containers.Origin.ImagePullPolicy | The imagePullPolicy for the origin container | Always |
+
+Note 1: The only allowed registries are "docker.io" and "hub.opensciencegrid.org"
 

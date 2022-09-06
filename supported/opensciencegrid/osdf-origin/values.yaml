@@ -37,7 +37,10 @@ Resources:
 
 Containers:
   Origin:
-    Image: opensciencegrid/stash-origin:3.6-release
+    # "docker.io" and "hub.opensciencegrid.org" are the allowed registries.
+    Registry: "hub.opensciencegrid.org"
+    # The tag to pull; the image is "opensciencegrid/stash-origin"
+    Tag: 3.6-release
     ImagePullPolicy: Always
 
 ### SLATE-START ###
