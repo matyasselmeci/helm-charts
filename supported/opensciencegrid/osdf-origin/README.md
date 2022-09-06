@@ -1,4 +1,4 @@
-# Open Science Data Federation Origin (public instance)
+# Open Science Data Federation Origin
 
 **TODO**
 
@@ -9,8 +9,8 @@
 
 ###Deployment
 ```console
-$ slate app get-conf osdf-origin-public > osdf-origin-public.yaml
-$ slate app install osdf-origin-public --group <group-name> --cluster <cluster-name> --conf osdf-origin-public.yaml
+$ slate app get-conf osdf-origin > osdf-origin.yaml
+$ slate app install osdf-origin --group <group-name> --cluster <cluster-name> --conf osdf-origin.yaml
 ```
 
 ### Usage
@@ -24,9 +24,9 @@ $ slate app install osdf-origin-public --group <group-name> --cluster <cluster-n
 | HostCredentials.HostCertKeySecret | The name of a SLATE secret which contains the host certificate and key this server should use to secure its communications | null |
 | Topology.Resource | The resource name this origin is registered under in OSG Topology | "" |
 | Topology.FQDN | The FQDN used in the topology registration | "" |
-| Origin.DataVolume | A PVC to serve data from, mounted at /xcache/namespace | |
-| Origin.MainExport | A directory under /xcache/namespace to export | /VO |"
-| Origin.ExtraExports | A list of extra directories to export | |
+| PublicExports.MainExport.Namespace | A directory under /xcache/namespace to export | /VO |"
+| PublicExports.MainExport.DataVolume | A PVC to serve data from, mounted at /xcache/namespace | |
+| PublicExports.ExtraExports | A list of extra directories to export | |
 | Resources.CPU | CPUs to request | 2 |
 | Resources.Memory | Memory to request | 1Gi |
 | Containers.Origin.Tag | The tag of the "opensciencegrid/stash-origin" image to use for the origin container | 3.6-release |
