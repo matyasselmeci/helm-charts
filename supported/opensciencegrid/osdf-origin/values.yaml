@@ -23,8 +23,9 @@ AuthOrigin:
     #- "/authexport3"
 
 DataVolumes:
+  # All MountPaths are relative to /xcache/namespace
   - Name: "xcache-namespace"
-    MountPath: "/xcache/namespace"
+    MountPath: "/"
     ClaimName: "osdf-origin-data"
 
 # Host Certificate and Key

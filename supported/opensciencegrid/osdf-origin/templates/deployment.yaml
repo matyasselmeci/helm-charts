@@ -101,7 +101,7 @@ spec:
             {{ end }}
           volumeMounts:
             {{ range .Values.DataVolumes }}
-            - mountPath: {{ .MountPath }}
+            - mountPath: /xcache/namespace{{ .MountPath }}
               name: {{ .Name }}
             {{ end }}
             {{ if .Values.HostCredentials.HostCertKeySecret }}
