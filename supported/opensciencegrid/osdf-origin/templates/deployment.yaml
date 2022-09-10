@@ -41,6 +41,9 @@ spec:
             path: hostkey.pem
             mode: 0o400
       {{ end }}
+      - name: extra-exports-cfg
+        configMap:
+          name: {{ template "osdf-origin.fullname" . }}
 
       containers:
         - name: origin
@@ -111,3 +114,6 @@ spec:
               name: hostcertkey
               subPath: tls.key
             {{ end }}
+            - mountPath: /etc/xrootd/config.d/extra_exports.cfg
+              name: extra-exports-cfg
+              subPath: extra_exports.cfg
