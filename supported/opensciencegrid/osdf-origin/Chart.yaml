@@ -3,6 +3,6 @@ name: osdf-origin
 # Chart version
 version: 0.1
 description: OSDF origin 
-# Version of application packaged for installation; this should be the version of the xcache RPM
-appVersion: "v3.1.0"
+# Version of application packaged for installation; this should be the branch the xcache RPM is from
+appVersion: "V3"
 #home: https://opensciencegrid.org/docs/data/stashcache/overview/
