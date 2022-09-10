@@ -59,7 +59,6 @@ spec:
             value: "{{ .Values.Topology.FQDN }}"
           - name: XC_ROOTDIR
             value: "/xcache/namespace"
-        {{ /* The first export is in the environment; subsequent exports go in extra_exports.cfg */ }}
         {{ if .Values.PublicExports }}
           - name: XC_PUBLIC_ORIGIN_EXPORT
             value: "{{ .Values.PublicExports[0] }}"
