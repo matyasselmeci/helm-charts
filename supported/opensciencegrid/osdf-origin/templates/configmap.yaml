@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "osdf-origin-public.fullname" . }}
+  name: {{ template "osdf-origin.fullname" . }}
   labels:
-    app: {{ template "osdf-origin-public.name" . }}
+    app: {{ template "osdf-origin.name" . }}
     release: {{ .Release.Name }}
     instance: {{ .Values.Instance | quote }}
 data:
