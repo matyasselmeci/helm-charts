@@ -61,14 +61,14 @@ spec:
             value: "/xcache/namespace"
         {{ if .Values.PublicExports }}
           - name: XC_PUBLIC_ORIGIN_EXPORT
-            value: "{{ .Values.PublicExports[0] }}"
+            value: "{{ first .Values.PublicExports }}"
           # for image versions that don't support XC_PUBLIC_ORIGIN_EXPORT
           - name: XC_ORIGINEXPORT
-            value: "{{ .Values.PublicExports[0] }}"
+            value: "{{ first .Values.PublicExports }}"
         {{ end }}
         {{ if .Values.AuthExports }}
           - name: XC_AUTH_ORIGIN_EXPORT
-            value: "{{ .Values.AuthExports[0] }}"
+            value: "{{ first .Values.AuthExports }}"
         {{ end }}
 
           resources:
