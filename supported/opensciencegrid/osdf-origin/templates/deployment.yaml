@@ -102,10 +102,10 @@ spec:
             {{- if .Values.HostCredentials.HostCertKeySecret }}
             - mountPath: /etc/grid-security/hostcert.pem
               name: hostcertkey
-              subPath: tls.crt
+              subPath: hostcert.pem
             - mountPath: /etc/grid-security/hostkey.pem
               name: hostcertkey
-              subPath: tls.key
+              subPath: hostkey.pem
             {{ end }}
             - mountPath: /etc/xrootd/config.d/extra_exports.cfg
               name: extra-exports-cfg
