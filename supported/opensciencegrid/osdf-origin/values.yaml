@@ -46,10 +46,6 @@ DataVolumes:
 
 
 # Host Certificate and Key
-# TODO Implement Let's Encrypt support
-# The keys contained in the secret must be:
-#    tls.crt
-#    tls.key
 # run 'slate secret create --help' for usage
 # Leaving this empty will disable reporting to the central collector.
 HostCredentials:
