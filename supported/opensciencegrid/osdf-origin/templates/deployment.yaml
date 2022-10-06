@@ -27,8 +27,18 @@ spec:
       volumes:
       {{- range .Values.DataVolumes }}
       - name: {{ .Name }}
+        {{- if and (not (empty .ClaimName)) (not (empty .HostPath)) }}
+          {{- fail "Specify ClaimName or HostPath, not both" -}}
+        {{- else if .ClaimName }}
         persistentVolumeClaim:
           claimName: {{ .ClaimName }}
+        {{- else if .HostPath }}
+        hostPath:
+          path: {{ .HostPath }}
+          type: Directory
+        {{- else }}
+          {{- fail "Specify either ClaimName or HostPath" -}}
+        {{- end }}
       {{- end }}
 
       {{- if .Values.HostCredentials.HostCertKeySecret }}
