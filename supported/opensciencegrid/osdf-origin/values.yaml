@@ -40,6 +40,11 @@ DataVolumes:
     #ClaimName: "osdf-origin-data"
     #HostPath: "/mnt/stash/origin-data"
 
+## Uncomment to persist /var/log/xrootd
+# XrootdLogVolume:
+#   ClaimName:
+
+
 # Host Certificate and Key
 # TODO Implement Let's Encrypt support
 # The keys contained in the secret must be:

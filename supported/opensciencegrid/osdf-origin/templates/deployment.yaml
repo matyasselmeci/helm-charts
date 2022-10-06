@@ -57,6 +57,14 @@ spec:
         configMap:
           name: {{ template "osdf-origin.fullname" . }}
 
+      {{- if .Values.XrootdLogVolume }}
+      - name: logs
+        persistentVolumeClaim:
+          claimName: {{ .Values.XrootdLogVolume.ClaimName }}
+      {{- end }}
+
+      # end volumes
+
       containers:
         - name: origin
           image: "{{ template "osdf-origin.origin-registry" . }}/{{ template "osdf-origin.origin-organization" . }}/stash-origin:{{ .Values.Containers.Origin.Tag }}"
@@ -135,4 +143,8 @@ spec:
               name: config
               subPath: stash-origin-auth-scitokens.conf.local
             {{ end }}
-
+            {{- if .Values.XrootdLogVolume }}
+            - mountPath: /var/log/xrootd
+              name: logs
+            {{ end }}
+          # end volumeMounts
