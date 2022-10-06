@@ -13,7 +13,11 @@ PublicOrigin:
     - "/VONAME/PUBLIC"
     #- "/publicexport2"
     #- "/publicexport3"
-    
+  ## Uncomment and fill out for local additions to the Authfile
+  # AuthfileLocal: |-
+  #  ...
+
+
 AuthOrigin:
   Enabled: false
   # All exports are relative to /xcache/namespace
@@ -21,6 +25,12 @@ AuthOrigin:
     - "/VONAME/PROTECTED"
     #- "/authexport2"
     #- "/authexport3"
+  ## Uncomment and fill out for local additions to the Authfile
+  # AuthfileLocal: |-
+  #   ...
+  ## Uncomment and fill out for local additions to scitokens.conf, e.g. extra issuers.
+  # ScitokensConfLocal: |-
+  #   ...
 
 DataVolumes:
   # All MountPaths are relative to /xcache/namespace

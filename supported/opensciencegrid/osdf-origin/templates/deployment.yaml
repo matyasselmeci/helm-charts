@@ -53,7 +53,7 @@ spec:
             path: hostkey.pem
             mode: 0o400
       {{- end }}
-      - name: extra-exports-cfg
+      - name: config
         configMap:
           name: {{ template "osdf-origin.fullname" . }}
 
@@ -118,5 +118,21 @@ spec:
               subPath: hostkey.pem
             {{ end }}
             - mountPath: /etc/xrootd/config.d/extra_exports.cfg
-              name: extra-exports-cfg
+              name: config
               subPath: extra_exports.cfg
+            {{- if .Values.PublicOrigin.AuthfileLocal }}
+            - mountPath: /run/stash-origin/Authfile.local
+              name: config
+              subPath: stash-origin-Authfile.local
+            {{ end }}
+            {{- if .Values.AuthOrigin.AuthfileLocal }}
+            - mountPath: /run/stash-origin-auth/Authfile.local
+              name: config
+              subPath: stash-origin-auth-Authfile.local
+            {{ end }}
+            {{- if .Values.AuthOrigin.ScitokensConfLocal }}
+            - mountPath: /run/stash-origin-auth/scitokens.conf.local
+              name: config
+              subPath: stash-origin-auth-scitokens.conf.local
+            {{ end }}
+
