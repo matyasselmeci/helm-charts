@@ -95,12 +95,12 @@ spec:
           ports:
             {{- if .Values.authOrigin.enabled }}
             - containerPort: 1095
-              hostPort: 1095
+              hostPort: {{ default 1095 .Values.authOrigin.port }}
               protocol: TCP
             {{- end }}
             {{- if .Values.publicOrigin.enabled }}
             - containerPort: 1094
-              hostPort: 1094
+              hostPort: {{ default 1094 .Values.publicOrigin.port }}
               protocol: TCP
             {{- end }}
           volumeMounts:

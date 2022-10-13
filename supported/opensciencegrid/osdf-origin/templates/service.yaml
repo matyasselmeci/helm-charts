@@ -13,13 +13,13 @@ spec:
   externalTrafficPolicy: Local
   ports:
     {{- if .Values.publicOrigin.enabled }}
-    - port: 1094
+    - port: {{ default 1094 .Values.publicOrigin.port }}
       targetPort: 1094
       protocol: TCP
       name: xrootd-stash-origin
     {{- end }}
     {{- if .Values.authOrigin.enabled }}
-    - port: 1095
+    - port: {{ default 1095 .Values.authOrigin.port }}
       targetPort: 1095
       protocol: TCP
       name: xrootd-stash-origin-auth

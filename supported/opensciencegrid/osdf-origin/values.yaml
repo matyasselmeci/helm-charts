@@ -10,6 +10,7 @@ topologyFQDN: "testorigin.example.net"
 
 publicOrigin:
   enabled: true
+  port: 1094
   # All exports are relative to /xcache/namespace
   exports:
     - "/VONAME/PUBLIC"
@@ -22,6 +23,7 @@ publicOrigin:
 
 authOrigin:
   enabled: false
+  port: 1095
   # All exports are relative to /xcache/namespace
   exports:
     - "/VONAME/PROTECTED"

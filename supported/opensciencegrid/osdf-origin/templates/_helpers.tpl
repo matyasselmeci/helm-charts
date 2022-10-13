@@ -37,7 +37,7 @@ Use "hub.opensciencegrid.org" as the default.
 */}}
 {{- define "osdf-origin.origin-registry" -}}
   {{- with .Values.image -}}
-    {{- if eq (.registry | default "hub.opensciencegrid.org") "hub.opensciencegrid.org" -}}
+    {{- if eq (default "hub.opensciencegrid.org" .registry) "hub.opensciencegrid.org" -}}
       hub.opensciencegrid.org
     {{- else if eq .registry "docker.io" -}}
       docker.io
@@ -54,7 +54,7 @@ Use "opensciencegrid" as the default.
 */}}
 {{- define "osdf-origin.origin-organization" -}}
   {{- with .Values.image -}}
-    {{- if eq (.organization | default "opensciencegrid") "opensciencegrid" -}}
+    {{- if eq (default "opensciencegrid" .organization) "opensciencegrid" -}}
       opensciencegrid
     {{- else if eq .organization "matyasosg" -}}
       matyasosg
