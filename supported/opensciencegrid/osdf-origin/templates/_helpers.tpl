@@ -36,30 +36,28 @@ Check image.registry -- only specific ones are allowed.
 Use "hub.opensciencegrid.org" as the default.
 */}}
 {{- define "osdf-origin.origin-registry" -}}
+{{- $okregistries := list "hub.opensciencegrid.org" "docker.io" -}}
   {{- with .Values.image -}}
-    {{- if eq (default "hub.opensciencegrid.org" .registry) "hub.opensciencegrid.org" -}}
-      hub.opensciencegrid.org
-    {{- else if eq .registry "docker.io" -}}
-      docker.io
+    {{- if has (default "hub.opensciencegrid.org" .registry) $okregistries -}}
+      {{- .registry -}}
     {{- else -}}
-      {{- fail "Only the 'hub.opensciencegrid.org' and 'docker.io' container registries are allowed" -}}
+      {{- fail (cat "image.registry must be one of" (toString $okregistries) ) -}}
     {{- end -}}
   {{- end -}}
 {{- end -}}
 
 
 {{/*
-Check Containers.Origin.Organization -- only specific ones are allowed.
+Check image.organization -- only specific ones are allowed.
 Use "opensciencegrid" as the default.
 */}}
 {{- define "osdf-origin.origin-organization" -}}
+{{- $okorganizations := list "opensciencegrid" "matyasosg" -}}
   {{- with .Values.image -}}
-    {{- if eq (default "opensciencegrid" .organization) "opensciencegrid" -}}
-      opensciencegrid
-    {{- else if eq .organization "matyasosg" -}}
-      matyasosg
+    {{- if has (default "opensciencegrid" .organization) $okorganizations -}}
+      {{- .organization -}}
     {{- else -}}
-      {{- fail "Only the 'opensciencegrid' and 'matyasosg' organizations are allowed" -}}
+      {{- fail (cat "image.organization must be one of" (toString $okorganizations) ) -}}
     {{- end -}}
   {{- end -}}
 {{- end -}}
