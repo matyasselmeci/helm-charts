@@ -7,18 +7,18 @@ metadata:
     release: {{ .Release.Name }}
     instance: {{ .Values.Instance | quote }}
   annotations:
-    external-dns.alpha.kubernetes.io/hostname: {{ .Values.Topology.FQDN }}
+    external-dns.alpha.kubernetes.io/hostname: {{ .Values.topologyFQDN | quote }}
 spec:
   type: LoadBalancer
   externalTrafficPolicy: Local
   ports:
-    {{- if .Values.PublicOrigin.Enabled }}
+    {{- if .Values.publicOrigin.enabled }}
     - port: 1094
       targetPort: 1094
       protocol: TCP
       name: xrootd-stash-origin
     {{- end }}
-    {{- if .Values.AuthOrigin.Enabled }}
+    {{- if .Values.authOrigin.enabled }}
     - port: 1095
       targetPort: 1095
       protocol: TCP
