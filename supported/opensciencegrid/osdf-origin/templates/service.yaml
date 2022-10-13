@@ -6,6 +6,8 @@ metadata:
     app: {{ template "osdf-origin.name" . }}
     release: {{ .Release.Name }}
     instance: {{ .Values.Instance | quote }}
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: {{ .Values.Topology.FQDN }}
 spec:
   type: LoadBalancer
   externalTrafficPolicy: Local

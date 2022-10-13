@@ -2,6 +2,7 @@
 # Results in a name like "osdf-origin-[Instance]"
 Instance: ""
 
+
 Topology:
   ResourceName: "TestOrigin"
   FQDN: "testorigin.example.net"
