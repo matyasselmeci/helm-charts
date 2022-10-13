@@ -53,9 +53,13 @@ HostCredentials:
   # "tls.key" and "tls.crt", respectively.
   HostCertKeySecret: null
 
-Resources:
-  CPU: 2
-  Memory: 1Gi
+# Resources:
+#   Requests:
+#     CPU: 1
+#     Memory: 2Gi
+#   Limits:
+#     CPU: 1
+#     Memory: 2Gi
 
 Containers:
   Origin:

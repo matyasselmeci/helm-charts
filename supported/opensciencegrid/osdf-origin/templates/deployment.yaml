@@ -85,13 +85,27 @@ spec:
             value: "{{ first .Values.AuthOrigin.Exports }}"
         {{- end }}
 
+          {{- if .Values.Resources }}
           resources:
+            {{- if .Values.Resources.Requests }}
             requests:
-              cpu: "{{ .Values.Resources.CPU }}"
-              memory: "{{ .Values.Resources.Memory }}"
+              {{- if .Values.Resources.Requests.CPU }}
+              cpu: "{{ .Values.Resources.Requests.CPU }}"
+              {{- end }}
+              {{- if .Values.Resources.Requests.Memory }}
+              memory: "{{ .Values.Resources.Requests.Memory }}"
+              {{- end }}
+            {{- end }}
+            {{- if .Values.Resources.Limits }}
             limits:
-              cpu: "{{ .Values.Resources.CPU }}"
-              memory: "{{ .Values.Resources.Memory }}"
+              {{- if .Values.Resources.Limits.CPU }}
+              cpu: "{{ .Values.Resources.Limits.CPU }}"
+              {{- end }}
+              {{- if .Values.Resources.Limits.Memory }}
+              memory: "{{ .Values.Resources.Limits.Memory }}"
+              {{- end }}
+            {{- end }}
+          {{- end }}
           livenessProbe:
             tcpSocket:
               {{- if .Values.AuthOrigin.Enabled }}
@@ -148,3 +162,5 @@ spec:
               name: logs
             {{ end }}
           # end volumeMounts
+
+# vim:et:sw=2:sts=2:ts=8
