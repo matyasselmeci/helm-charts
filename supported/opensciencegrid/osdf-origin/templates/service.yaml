@@ -8,7 +8,7 @@ metadata:
     instance: {{ .Values.Instance | quote }}
 spec:
   type: LoadBalancer
-  externalTrafficPolicy: local
+  externalTrafficPolicy: Local
   ports:
     {{- if .Values.PublicOrigin.Enabled }}
     - port: 1094
