@@ -24,3 +24,7 @@ spec:
       protocol: TCP
       name: xrootd-stash-origin-auth
     {{- end }}
+  selector:
+    app: {{ template "osdf-origin.name" . }}
+    release: {{ .Release.Name }}
+    instance: {{ .Values.Instance | quote }}
