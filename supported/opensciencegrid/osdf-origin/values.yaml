@@ -36,6 +36,10 @@ authOrigin:
   # scitokensConfLocal: |-
   #   ...
 
+
+livenessProbeEnabled: true
+
+
 dataVolumes:
   # All MountPaths are relative to /xcache/namespace
   - name: "xcache-namespace"

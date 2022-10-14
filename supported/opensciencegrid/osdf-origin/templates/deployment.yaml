@@ -83,6 +83,7 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           {{- end }}
+          {{- if .Values.livenessProbeEnabled }}
           livenessProbe:
             tcpSocket:
               {{- if .Values.authOrigin.enabled }}
@@ -92,6 +93,7 @@ spec:
               {{- end }}
             initialDelaySeconds: 600
             periodSeconds: 60
+          {{- end }}
           ports:
             {{- if .Values.authOrigin.enabled }}
             - containerPort: 1095
