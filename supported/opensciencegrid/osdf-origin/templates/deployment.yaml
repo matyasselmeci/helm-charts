@@ -76,8 +76,14 @@ spec:
             value: "{{ .Values.topologyFQDN }}"
           - name: XC_ROOTDIR
             value: "/xcache/namespace"
-          # Note: we do not definite XC_PUBLIC_ORIGIN_EXPORT or XC_AUTH_ORIGIN_EXPORT
-          # We do the exports in the configmap instead.
+        {{- if .Values.publicOrigin.exports }}
+          - name: XC_PUBLIC_ORIGIN_EXPORT
+            value: "{{ first .Values.publicOrigin.exports }}"
+        {{- end }}
+        {{- if .Values.authOrigin.exports }}
+          - name: XC_AUTH_ORIGIN_EXPORT
+            value: "{{ first .Values.authOrigin.exports }}"
+        {{- end }}
 
           {{- if .Values.resources }}
           resources:
@@ -118,9 +124,9 @@ spec:
               name: hostcertkey
               subPath: hostkey.pem
             {{ end }}
-            - mountPath: /etc/xrootd/config.d/exports.cfg
+            - mountPath: /etc/xrootd/config.d/extra_exports.cfg
               name: config
-              subPath: exports.cfg
+              subPath: extra_exports.cfg
             {{- if .Values.publicOrigin.authfileLocal }}
             - mountPath: /run/stash-origin/Authfile.local
               name: config
