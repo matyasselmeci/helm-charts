@@ -15,9 +15,7 @@ spec:
       app: {{ template "osdf-origin.name" . }}
       release: {{ .Release.Name }}
       instance: {{ .Values.Instance | quote }}
-  {{- if .Values.nodeName }}
-  nodeName: {{ .Values.nodeName }}
-  {{- end }}
+
   template:
     metadata:
       labels:
