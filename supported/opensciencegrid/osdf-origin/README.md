@@ -75,6 +75,7 @@ explictly set `dataVolumes` to `[]`.
 | dataVolumes | A list of data volume definitions -- see "specifying data volumes" below | |
 
 **Optional options**
+
 | Parameter | Description | Default |
 | --------  | ----------  | ------- |
 | nameOverride | Overrides the name of the application | "" |
