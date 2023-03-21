@@ -68,10 +68,8 @@ xrootdLogVolumeClaimName: null
 
 
 image:
-  # "docker.io" and "hub.opensciencegrid.org" are the allowed registries.
   registry: "hub.opensciencegrid.org"
-  # The organization; "matyasosg", "osgpreview", and "opensciencegrid" are the allowed organizations.
-  organization: opensciencegrid
+  organization: "opensciencegrid"
   # The tag to pull; the image is "$ORGANIZATION/stash-origin"
   tag: 3.6-release
   pullPolicy: Always
@@ -125,9 +123,3 @@ multiUser:
 
 ## A secret containing the S3 keys for the experimental S3 plugin
 # s3KeysSecret: null
-
-### SLATE-START ###
-SLATE:
-  Instance:
-    ID: "untagged"
-### SLATE-END ###

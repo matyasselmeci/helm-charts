@@ -105,7 +105,7 @@ spec:
 
       containers:
         - name: origin
-          image: "{{ template "osdf-origin.origin-registry" . }}/{{ template "osdf-origin.origin-organization" . }}/stash-origin:{{ .Values.image.tag }}"
+          image: "{{ .Values.image.registry }}/{{ .Values.image.organization }}/stash-origin:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: XC_RESOURCENAME

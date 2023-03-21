@@ -1,19 +1,41 @@
 # Open Science Data Federation Origin
 
+This chart sets up an origin for the [Open Science Data Federation](https://osg-htc.org/docs/data/stashcache/overview/);
+see that page for more details.
+
+Before installation, you will need to register your origin in OSG Topology first;
+See the [registration instructions](https://osg-htc.org/docs/data/stashcache/install-origin/#registering-the-origin).
+
+
+## Installation via the Helm command line
 **TODO**
 
 
-# Installation
+## Installation via the Helm Kubernetes Operator
 
-**TODO**
-
-###Deployment
-```console
-$ slate app get-conf osdf-origin > osdf-origin.yaml
-$ slate app install osdf-origin --group <group-name> --cluster <cluster-name> --conf osdf-origin.yaml
+Create a HelmRelease object starting with
 ```
+apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
+metadata:
+  name: osdf-origin
+spec:
+  chart:
+    repository: https://hub.opensciencegrid.org/chartrepo/opensciencegrid
+    name: osdf-origin
+    version: "1.0"
+  values:
+```
+(replace the version as appropriate)
 
-### Usage
+If using cert-manager, create a `Certificate` object for the HTTPS cert/key.
+If using secrets directly, create a `Secret` of type `tls`.
+(Not required if serving only public data via plain HTTP)
+
+Under `values:`, fill out the required configuration options listed below.
+
+
+## Usage
 
 You will need to register your origin in OSG Topology first; enter the
 resource name and FQDN of your registration in the `topologyResourceName` and
@@ -41,7 +63,7 @@ authOrigin:
 
 Define at least one data volume (see "specifying data volumes" below).
 
-#### Specifying data volumes
+### Specifying data volumes
 
 The data that the origin serves usually comes from a data volume.  This is either a PVC or a hostPath.
 You list data volumes in the `dataVolumes` parameter, with the following options:
@@ -87,8 +109,8 @@ explictly set `dataVolumes` to `[]`.
 | extraXrootdConfigAfter | Arbitrary xrootd config lines added after the OSG-provided config | |
 | livenessProbeEnabled | Enables the liveness probe (note 1) | true |
 | xrootdLogVolumeClaimName | A PVC for persisting /var/log/xrootd | null |
-| image.registry | The image registry to pull from (note 3) | hub.opensciencegrid.org |
-| image.organization | The organization to pull the "stash-origin" image from for the origin container (note 2) | opensciencegrid |
+| image.registry | The image registry to pull from | hub.opensciencegrid.org |
+| image.organization | The organization to pull the "stash-origin" image from for the origin container | opensciencegrid |
 | image.tag | The tag of the "$ORGANIZATION/stash-origin" image to use for the origin container | 3.6-release |
 | image.pullPolicy | The imagePullPolicy for the origin container | Always |
 | resources | Resources and limits for the origin container in the deployment | |
@@ -102,7 +124,3 @@ explictly set `dataVolumes` to `[]`.
 
 - Note 1: The liveness probe tests the auth origin instance if it's enabled, or the public origin instance if the auth origin is not enabled;
   turn off the probe if you are debugging so the pod doesn't get killed mid-debug
-- Note 2: The only allowed organizations are "opensciencegrid", "osgpreview", and "matyasosg"
-- Note 3: The only allowed registries are "docker.io" and "hub.opensciencegrid.org"
-
-
