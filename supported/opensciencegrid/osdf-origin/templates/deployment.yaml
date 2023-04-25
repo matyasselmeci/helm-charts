@@ -7,9 +7,11 @@ metadata:
     release: {{ .Release.Name }}
     instance: {{ .Values.Instance | quote }}
 spec:
+  {{- if .Values.replica.enabled }}
   replicas: 1
   strategy:
     type: Recreate
+  {{- end }}
   selector:
     matchLabels:
       app: {{ template "osdf-origin.name" . }}
