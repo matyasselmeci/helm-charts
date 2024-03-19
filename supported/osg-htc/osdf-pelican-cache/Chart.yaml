@@ -1,0 +1,8 @@
+apiVersion: v1
+name: osdf-pelican-cache
+# Chart version
+version: "0.0.1"
+description: Pelican-Based OSDF Cache
+# Version of application packaged for installation
+appVersion: "V7"
+#home: https://github.com/PelicanPlatform/pelican

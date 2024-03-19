@@ -1,0 +1,14 @@
+---
+{{ if .Values.certmanager.enabled }}
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ template "osdf-origin.fullname" . }}
+spec:
+  secretName: {{ template "osdf-origin.fullname" . }}-cert
+  dnsNames:
+  - {{ .Values.topologyFQDN }}
+  issuerRef:
+    name: {{ .Values.certmanager.issuerName }}
+    kind: ClusterIssuer
+{{ end }}

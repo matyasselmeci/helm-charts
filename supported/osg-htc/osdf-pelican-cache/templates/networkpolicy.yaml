@@ -1,0 +1,34 @@
+# TODO
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-{{ template "osdf-origin.fullname" . }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ template "osdf-origin.name" . }}
+      release: {{ .Release.Name }}
+      instance: {{ template "osdf-origin.fullname" . }}
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - ports:
+        # stash-origin
+        - protocol: TCP
+          port: 1094
+          # stash-origin-auth
+        - protocol: TCP
+          port: 1095
+        {{- if .Values.monitoringShoveler.enabled }}
+        - protocol: UDP
+          port: 9993
+        - protocol: TCP
+          port: 9667
+        {{- end}}
+  # egress is needed for downloading CRLs, contacting the OSG Central
+  # Collector, reporting to the OSG redirctor
+  egress:
+    - {}

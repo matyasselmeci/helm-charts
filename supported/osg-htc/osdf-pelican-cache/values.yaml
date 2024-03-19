@@ -1,0 +1,78 @@
+# Label for this particular deployed instance
+# Results in a name like "osdf-pelican-cache-[Instance]"
+Instance: ""
+
+nameOverride: ""
+fullnameOverride: ""
+
+topologyResourceName: "TestCache"
+topologyFQDN: "testcache.example.net"
+
+# Use CertManager for the OSDF Cache host cert
+certmanager:
+  enabled: false
+  issuerName: null
+
+# If not using CertManager, you must provide a host certificate as a secret
+# hostCertKeySecret is the name of the secret containing a host key and certificate in
+# "tls.key" and "tls.crt", respectively.
+hostCertKeySecret: null
+
+
+## Uncomment to persist /var/log/pelican
+pelicanLogVolumeClaimName: null
+
+
+image:
+  registry: "hub.opensciencegrid.org"
+  organization: pelican_platform
+  # The tag to pull; the image is "$ORGANIZATION/osdf-cache"
+  tag: latest
+  pullPolicy: Always
+
+# Resource requests/limits for the origin container
+resources:
+  requests:
+    cpu: 1
+    memory: 16Gi
+  limits:
+    cpu: 1
+    memory: 24Gi
+
+# Extra environment variables for the origin container
+# extraEnv:
+#   - name: ...
+#     value: "..."
+
+
+# Optional node lock for the deployment
+nodeName: null
+
+# Optional nodeSelector block for the deployment
+nodeSelector: {}
+
+# Optional tolerations block for the deployment
+tolerations: []
+
+# Optional affinity block for the deployment
+affinity: {}
+
+# Optional annotations block for the service
+serviceAnnotations: {}
+
+##########################
+# OPTIONAL CONFIGURATION #
+##########################
+
+# Optional service parameters
+service:
+  # Use a service to access deployment
+  enabled: true
+  type: LoadBalancer
+  clusterIP: ""
+  loadBalancerIP: ""
+  externalTrafficPolicy: Local
+
+## Enable hostNetwork mode
+hostNetwork: false
+
