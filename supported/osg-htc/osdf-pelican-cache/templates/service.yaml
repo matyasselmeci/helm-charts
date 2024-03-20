@@ -1,5 +1,3 @@
-# TODO
-
 {{- if .Values.service.enabled }}
 apiVersion: v1
 kind: Service
@@ -26,28 +24,14 @@ spec:
   loadBalancerIP: {{ .Values.service.loadBalancerIP }}
   {{- end }}
   ports:
-    {{- if .Values.publicOrigin.enabled }}
-    - port: {{ default 1094 .Values.publicOrigin.port }}
-      targetPort: 1094
+    - name: pelican
+      port: 8443
       protocol: TCP
-      name: xrootd-stash-origin
-    {{- end }}
-    {{- if .Values.authOrigin.enabled }}
-    - port: {{ default 1095 .Values.authOrigin.port }}
-      targetPort: 1095
+      targetPort: 8443
+    - name: pelican-webui
+      port: 443
       protocol: TCP
-      name: xrootd-stash-origin-auth
-    {{- end }}
-    {{- if .Values.monitoringShoveler.enabled }}
-    - name: shoveler
-      protocol: UDP
-      port: 9993
-      targetPort: shoveler
-    - name: stats
-      protocol: TCP
-      port: 9667
-      targetPort: stats
-    {{- end }}
+      targetPort: 443
   selector:
     app: {{ template "osdf-origin.name" . }}
     release: {{ .Release.Name }}

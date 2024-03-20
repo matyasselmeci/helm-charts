@@ -8,6 +8,9 @@ fullnameOverride: ""
 topologyResourceName: "TestCache"
 topologyFQDN: "testcache.example.net"
 
+directorURL: https://osdf-director-origins.osg-htc.org
+discoveryURL: https://osg-htc.org
+
 # Use CertManager for the OSDF Cache host cert
 certmanager:
   enabled: false
@@ -19,8 +22,12 @@ certmanager:
 hostCertKeySecret: null
 
 
-## Uncomment to persist /var/log/pelican
-pelicanLogVolumeClaimName: null
+logging:
+  loglevel: "error"
+  scitokens: "error"
+  pss: "error"
+  ## Set logVolumeClaimName to persist /var/log/pelican
+  logVolumeClaimName: null
 
 
 image:
