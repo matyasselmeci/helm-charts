@@ -11,6 +11,9 @@ topologyFQDN: "testcache.example.net"
 directorURL: https://osdf-director-origins.osg-htc.org
 discoveryURL: https://osg-htc.org
 
+# Set webPasswordSecret to a Secret containing a single item named "webserver-passwd"
+webPasswordSecret: null
+
 # Use CertManager for the OSDF Cache host cert
 certmanager:
   enabled: false
@@ -21,13 +24,20 @@ certmanager:
 # "tls.key" and "tls.crt", respectively.
 hostCertKeySecret: null
 
+# Set this to be a PVC for the cache data
+cacheVolumeClaimName: null
 
 logging:
   loglevel: "error"
   scitokens: "error"
   pss: "error"
-  ## Set logVolumeClaimName to persist /var/log/pelican
-  logVolumeClaimName: null
+  ## Set volumeClaimName to persist /var/log/pelican
+  volumeClaimName: null
+
+
+monitoringShoveler:
+  enabled: false
+  accessTokenSecret: null
 
 
 image:
@@ -46,7 +56,7 @@ resources:
     cpu: 1
     memory: 24Gi
 
-# Extra environment variables for the origin container
+# Extra environment variables for the cache container
 # extraEnv:
 #   - name: ...
 #     value: "..."

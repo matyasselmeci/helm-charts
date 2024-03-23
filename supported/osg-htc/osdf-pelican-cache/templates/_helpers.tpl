@@ -4,7 +4,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "osdf-origin.name" -}}
+{{- define "osdf-pelican-cache.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
@@ -13,7 +13,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "osdf-origin.fullname" -}}
+{{- define "osdf-pelican-cache.fullname" -}}
 {{- if .Values.fullnameOverride -}}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" -}}
 {{- else -}}
@@ -29,38 +29,7 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "osdf-origin.chart" -}}
+{{- define "osdf-pelican-cache.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
-{{- end -}}
-
-{{/*
-Check image.registry -- only specific ones are allowed.
-Use "hub.opensciencegrid.org" as the default.
-*/}}
-{{- define "osdf-origin.origin-registry" -}}
-{{- $okregistries := list "hub.opensciencegrid.org" "docker.io" -}}
-  {{- with .Values.image -}}
-    {{- if has (default "hub.opensciencegrid.org" .registry) $okregistries -}}
-      {{- .registry -}}
-    {{- else -}}
-      {{- fail (cat "image.registry must be one of" (toString $okregistries) ) -}}
-    {{- end -}}
-  {{- end -}}
-{{- end -}}
-
-
-{{/*
-Check image.organization -- only specific ones are allowed.
-Use "opensciencegrid" as the default.
-*/}}
-{{- define "osdf-origin.origin-organization" -}}
-{{- $okorganizations := list "opensciencegrid" "matyasosg" "osgpreview" -}}
-  {{- with .Values.image -}}
-    {{- if has (default "opensciencegrid" .organization) $okorganizations -}}
-      {{- .organization -}}
-    {{- else -}}
-      {{- fail (cat "image.organization must be one of" (toString $okorganizations) ) -}}
-    {{- end -}}
-  {{- end -}}
 {{- end -}}
 

@@ -1,13 +1,13 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ template "osdf-origin.fullname" . }}
+  name: {{ template "osdf-pelican-cache.fullname" . }}
 spec:
   podSelector:
     matchLabels:
-      app: {{ template "osdf-origin.name" . }}
+      app: {{ template "osdf-pelican-cache.name" . }}
       release: {{ .Release.Name }}
-      instance: {{ template "osdf-origin.fullname" . }}
+      instance: {{ template "osdf-pelican-cache.fullname" . }}
   policyTypes:
     - Ingress
     - Egress

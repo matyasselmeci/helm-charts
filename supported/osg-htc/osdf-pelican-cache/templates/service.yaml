@@ -2,11 +2,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "osdf-origin.fullname" . }}
+  name: {{ include "osdf-pelican-cache.fullname" . }}
   labels:
-    app: {{ template "osdf-origin.name" . }}
+    app: {{ template "osdf-pelican-cache.name" . }}
     release: {{ .Release.Name }}
-    instance: {{ template "osdf-origin.fullname" . }}
+    instance: {{ template "osdf-pelican-cache.fullname" . }}
   annotations:
     external-dns.alpha.kubernetes.io/hostname: {{ .Values.topologyFQDN | quote }}
     {{- with .Values.serviceAnnotations }}
@@ -33,7 +33,7 @@ spec:
       protocol: TCP
       targetPort: 443
   selector:
-    app: {{ template "osdf-origin.name" . }}
+    app: {{ template "osdf-pelican-cache.name" . }}
     release: {{ .Release.Name }}
-    instance: {{ template "osdf-origin.fullname" . }}
+    instance: {{ template "osdf-pelican-cache.fullname" . }}
 {{- end }}

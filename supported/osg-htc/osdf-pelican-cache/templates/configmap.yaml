@@ -1,18 +1,18 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "osdf-origin.fullname" . }}
+  name: {{ template "osdf-pelican-cache.fullname" . }}
   labels:
-    app: {{ template "osdf-origin.name" . }}
+    app: {{ template "osdf-pelican-cache.name" . }}
     release: {{ .Release.Name }}
-    instance: {{ template "osdf-origin.fullname" . }}
+    instance: {{ template "osdf-pelican-cache.fullname" . }}
 data:
   osdf-cache.yaml: |
     Federation:
       DirectorURL: {{ .Values.directorURL }}
       DiscoveryURL: {{ .Values.discoveryURL }}
     Server:
-      Hostname: {{ topologyFQDN }}
+      Hostname: {{ .Values.topologyFQDN }}
       Webport: 443
       EnableUI: true
       TLSCertificate: /etc/pelican/cert-orig/tls.crt
@@ -24,7 +24,7 @@ data:
       Level: {{ .Values.logging.loglevel }}
       LogLocation: /var/log/pelican/pelican.log
     Shoveler:
-      Enable: false
+      Enable: {{ .Values.monitoringShoveler.enabled }}
     XRootD:
       SciTokensConfig: /etc/pelican/topology/scitokens.cfg
     Cache:
