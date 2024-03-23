@@ -85,8 +85,6 @@ spec:
             - mountPath: /etc/pelican/cert-orig
               name: pelican-cache-ssl-cert
             {{ end }}
-            - mountPath: /var/log/pelican
-              name: logging-volume
             - mountPath: /etc/pelican/pelican.yaml
               name: config
               subPath: pelican.yaml
@@ -107,12 +105,8 @@ spec:
         {{ end }}
 
         - name: cache-data
-        {{- if .Values.cacheVolumeClaimName }}
           persistentVolumeClaim:
-            claimName: {{ .Values.cacheVolumeClaimName }}
-        {{- else }}
-          emptyDir: {}
-        {{- end }}
+            claimName: {{ template "osdf-pelican-cache.cachepvcname" . }}
 
         {{- if or .Values.certmanager.enabled .Values.hostCertKeySecret }}
         - name: pelican-cache-ssl-cert
@@ -134,14 +128,6 @@ spec:
         - name: config
           configMap:
             name: {{ template "osdf-pelican-cache.fullname" . }}
-
-        - name: logging-volume
-        {{- if .Values.logging.volumeClaimName }}
-          persistentVolumeClaim:
-            claimName: {{ .Values.logging.volumeClaimName }}
-        {{- else }}
-          emptyDir: {}
-        {{- end }}
 
       # end volumes
     # end spec

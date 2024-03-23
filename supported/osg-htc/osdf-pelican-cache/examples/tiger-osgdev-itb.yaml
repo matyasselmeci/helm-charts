@@ -1,3 +1,6 @@
+# Example: based on osgdev/itb-osdf-pelican-cache on tiger
+# use the instance name "itb"
+
 topologyResourceName: "ITB_OSDF_PELICAN_CACHE"
 topologyFQDN: "itb-osdf-pelican-cache.osgdev.chtc.io"
 
@@ -10,9 +13,9 @@ certmanager:
 
 webserverPasswdSecret: itb-osdf-pelican-webserver-passwd
 
-cacheVolumeClaimName: itb-osdf-pelican-cache-data
-logging:
-  volumeClaimName: itb-odsf-pelican-cache-logging
+cacheVolume:
+  storage: 1000Gi
+  storageClassName: 3x-replica-nvme-raddus
 
 image:
   tag: "v7.6.2"

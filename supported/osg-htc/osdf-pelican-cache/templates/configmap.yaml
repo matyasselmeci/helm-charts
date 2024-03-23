@@ -20,7 +20,6 @@ data:
         Scitokens: {{ .Values.logging.scitokens }}
         PSS: {{ .Values.logging.pss }}
       Level: {{ .Values.logging.loglevel }}
-      LogLocation: /var/log/pelican/pelican.log
     Shoveler:
       Enable: {{ .Values.monitoringShoveler.enabled }}
     XRootD:
