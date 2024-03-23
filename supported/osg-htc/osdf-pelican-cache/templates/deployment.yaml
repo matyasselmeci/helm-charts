@@ -109,7 +109,7 @@ spec:
         - name: cache-data
         {{- if .Values.cacheVolumeClaimName }}
           persistentVolumeClaim:
-            claimName: {{ .cacheVolumeClaimName }}
+            claimName: {{ .Values.cacheVolumeClaimName }}
         {{- else }}
           emptyDir: {}
         {{- end }}
