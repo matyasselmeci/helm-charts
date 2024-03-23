@@ -23,7 +23,6 @@ public HTTPS cert and `tls.key` with the private HTTPS key.
 
 | Parameter | Description | Default |
 | --------  | ----------  | ------- |
-| Instance | A label for your application instance | "" |
 | topologyResourceName | The resource name this origin is registered under in OSG Topology | "TestOrigin" |
 | topologyFQDN | The FQDN used in the topology registration | "testorigin.example.net" |
 | hostCertKeySecret | The Secret containing the HTTPS cert/key for the origin | null |
@@ -34,11 +33,6 @@ public HTTPS cert and `tls.key` with the private HTTPS key.
 | --------  | ----------  | ------- |
 | nameOverride | Overrides the name of the application | "" |
 | fullnameOverride | Overrides the fully qualified app name | "" |
-| pelicanLogVolumeClaimName | A PVC for persisting /var/log/pelican | null |
-| image.registry | The image registry to pull from (note 3) | hub.opensciencegrid.org |
-| image.organization | The organization to pull the "osdf-cache" image from for the cache container (note 2) | pelican_platform |
-| image.tag | The tag of the "$ORGANIZATION/osdf-cache" image to use for the cache container | latest |
-| image.pullPolicy | The imagePullPolicy for the cache container | Always |
 | resources | Resources and limits for the origin container in the deployment | |
 | extraEnv | A list of name/value pairs for extra environment variables for the origin container | |
 | nodeName | If set, lock the origin pod to the specified node | null |

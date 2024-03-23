@@ -3,11 +3,9 @@ kind: ConfigMap
 metadata:
   name: {{ template "osdf-pelican-cache.fullname" . }}
   labels:
-    app: {{ template "osdf-pelican-cache.name" . }}
-    release: {{ .Release.Name }}
-    instance: {{ template "osdf-pelican-cache.fullname" . }}
+    {{- include "osdf-pelican-cache.labels" . | nindent 4 }}
 data:
-  osdf-cache.yaml: |
+  pelican.yaml: |
     Federation:
       DirectorURL: {{ .Values.directorURL }}
       DiscoveryURL: {{ .Values.discoveryURL }}
@@ -30,7 +28,7 @@ data:
     Cache:
       DataLocation: /cache
       Port: 8443
-    {{ if .Values.extraConfig }}
-{{ .Values.extraConfig | indent 4 }}
+    {{ if .Values.extraPelicanConfig }}
+{{ .Values.extraPelicanConfig | indent 4 }}
     {{- end }}
 

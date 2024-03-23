@@ -1,18 +1,12 @@
-# Label for this particular deployed instance
-# Results in a name like "osdf-pelican-cache-[Instance]"
-Instance: ""
-
 nameOverride: ""
 fullnameOverride: ""
 
 topologyResourceName: "TestCache"
 topologyFQDN: "testcache.example.net"
 
+federation: "osdf"
 directorURL: https://osdf-director-origins.osg-htc.org
 discoveryURL: https://osg-htc.org
-
-# Set webPasswordSecret to a Secret containing a single item named "webserver-passwd"
-webPasswordSecret: null
 
 # Use CertManager for the OSDF Cache host cert
 certmanager:
@@ -23,6 +17,9 @@ certmanager:
 # hostCertKeySecret is the name of the secret containing a host key and certificate in
 # "tls.key" and "tls.crt", respectively.
 hostCertKeySecret: null
+
+# Set webserverPasswdSecret to a Secret containing a single item named "webserver-passwd"
+webserverPasswdSecret: null
 
 # Set this to be a PVC for the cache data
 cacheVolumeClaimName: null
@@ -41,11 +38,10 @@ monitoringShoveler:
 
 
 image:
-  registry: "hub.opensciencegrid.org"
-  organization: pelican_platform
-  # The tag to pull; the image is "$ORGANIZATION/osdf-cache"
-  tag: latest
+  repository: "hub.opensciencegrid.org/pelican_platform/osdf-cache"
   pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
 
 # Resource requests/limits for the origin container
 resources:
@@ -56,10 +52,18 @@ resources:
     cpu: 1
     memory: 24Gi
 
+##########################
+# OPTIONAL CONFIGURATION #
+##########################
+
 # Extra environment variables for the cache container
 # extraEnv:
-#   - name: ...
+#   - name: "..."
 #     value: "..."
+
+# Arbitrary extra Pelican config YAML
+extraPelicanConfig: ""
+
 
 
 # Optional node lock for the deployment
@@ -76,10 +80,6 @@ affinity: {}
 
 # Optional annotations block for the service
 serviceAnnotations: {}
-
-##########################
-# OPTIONAL CONFIGURATION #
-##########################
 
 # Optional service parameters
 service:

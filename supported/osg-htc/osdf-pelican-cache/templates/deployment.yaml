@@ -3,26 +3,18 @@ kind: Deployment
 metadata:
   name: {{ template "osdf-pelican-cache.fullname" . }}
   labels:
-    app: {{ template "osdf-pelican-cache.name" . }}
-    federation: osdf
-    instance: {{ template "osdf-pelican-cache.fullname" . }}
-    release: {{ .Release.Name }}
+    {{- include "osdf-pelican-cache.labels" . | nindent 4 }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ template "osdf-pelican-cache.name" . }}
-      release: {{ .Release.Name }}
-      instance: {{ template "osdf-pelican-cache.fullname" . }}
+      {{- include "osdf-pelican-cache.selectorLabels" . | nindent 6 }}
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: {{ template "osdf-pelican-cache.name" . }}
-        federation: osdf
-        instance: {{ template "osdf-pelican-cache.fullname" . }}
-        release: {{ .Release.Name }}
+        {{- include "osdf-pelican-cache.selectorLabels" . | nindent 8 }}
 
     spec:
       {{- if .Values.nodeName }}
@@ -43,13 +35,68 @@ spec:
       {{- if .Values.hostNetwork }}
       hostNetwork: true
       {{- end }}
-      # securityContext:
-      #   fsGroup: 10940
-      # ^^ XXX do we need this?
       enableServiceLinks: false
+
+      initContainers:
+      - args:
+        - -o
+        - scitokens.cfg
+        - --output-dir
+        - /topology
+        - "https://topology.opensciencegrid.org/cache/scitokens.conf?fqdn={{ .Values.topologyFQDN }}"
+        image: curlimages/curl:7.77.0
+        name: topology-scitokens-fetcher
+        volumeMounts:
+        - mountPath: /topology
+          name: topology-scitokens-cfg
+
+      containers:
+        - name: osdf-cache
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- with .Values.extraEnv }}
+          env:
+              {{- toYaml . | nindent 12 }}
+          {{- end }}
+
+          {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          ports:
+            - containerPort: 8443
+              name: pelican
+              protocol: TCP
+            - containerPort: 443
+              name: pelican-webui
+              protocol: TCP
+          volumeMounts:
+            {{- if .Values.webPasswordSecret }}
+            - mountPath: /etc/pelican/server-web-passwd
+              name: webserver-passwd
+              readOnly: true
+              subPath: server-web-passwd
+            {{ end }}
+            - mountPath: /etc/pelican/topology
+              name: topology-scitokens-cfg
+            - mountPath: /cache
+              name: cache-data
+            {{- if or .Values.certmanager.enabled .Values.hostCertKeySecret }}
+            - mountPath: /etc/pelican/cert-orig
+              name: pelican-cache-ssl-cert
+            {{ end }}
+            - mountPath: /var/log/pelican
+              name: logging-volume
+            - mountPath: /etc/pelican/pelican.yaml
+              name: config
+              subPath: pelican.yaml
+          # end volumeMounts
+      # end containers
+
       volumes:
         - name: topology-scitokens.cfg
           emptyDir: {}
+        {{- if .Values.webPasswordSecret }}
         - name: webserver-passwd
           secret:
             items:
@@ -57,15 +104,18 @@ spec:
               mode: "0644"
               path: server-web-passwd
           secretName: {{ .Values.webPasswordSecret }}
+        {{ end }}
 
-        {{- if .Values.cacheVolumeClaimName }}
         - name: cache-data
+        {{- if .Values.cacheVolumeClaimName }}
           persistentVolumeClaim:
             claimName: {{ .cacheVolumeClaimName }}
+        {{- else }}
+          emptyDir: {}
         {{- end }}
 
         {{- if or .Values.certmanager.enabled .Values.hostCertKeySecret }}
-        - name: hostcertkey
+        - name: pelican-cache-ssl-cert
           secret:
             {{- if .Values.certmanager.enabled }}
             secretName: {{ template "osdf-pelican-cache.fullname" . }}-cert
@@ -85,73 +135,15 @@ spec:
           configMap:
             name: {{ template "osdf-pelican-cache.fullname" . }}
 
-        {{- if .Values.logging.volumeClaimName }}
         - name: logging-volume
+        {{- if .Values.logging.volumeClaimName }}
           persistentVolumeClaim:
             claimName: {{ .Values.logging.volumeClaimName }}
+        {{- else }}
+          emptyDir: {}
         {{- end }}
 
       # end volumes
-
-      initContainers:
-      - args:
-        - -o
-        - scitokens.cfg
-        - --output-dir
-        - /topology
-        - {{ cat "https://topology.opensciencegrid.org/cache/scitokens.conf?fqdn="  .Values.topologyFQDN }}
-        image: curlimages/curl:7.77.0
-        name: topology-scitokens-fetcher
-        volumeMounts:
-        - mountPath: /topology
-          name: topology-scitokens-cfg
-
-      containers:
-        - name: pelican-cache
-          image: "{{ .Values.image.registry }}/{{ .Values.image.organization }}/osdf-cache:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          {{- with .Values.extraEnv }}
-          env:
-              {{- toYaml . | nindent 12 }}
-          {{- end }}
-
-          {{- with .Values.resources }}
-          resources:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          {{- if .Values.livenessProbeEnabled }}
-          livenessProbe:
-            tcpSocket:
-              port: 8443
-            initialDelaySeconds: 600
-            periodSeconds: 60
-          {{- end }}
-          ports:
-            - containerPort: 8443
-              name: pelican
-              protocol: TCP
-            - containerPort: 443
-              name: pelican-webui
-              protocol: TCP
-          volumeMounts:
-            - mountPath: /etc/pelican/server-web-passwd
-              name: webserver-passwd
-              readOnly: true
-              subPath: server-web-passwd
-            - mountPath: /etc/pelican/topology
-              name: topology-scitokens-cfg
-            - mountPath: /cache
-              name: cache-data
-            {{- if or .Values.certmanager.enabled .Values.hostCertKeySecret }}
-            - mountPath: /etc/pelican/cert-orig
-              name: pelican-cache-ssl-cert
-            {{ end }}
-            {{- if .Values.logging.volumeClaimName }}
-            - mountPath: /var/log/pelican
-              name: logging-volume
-            {{ end }}
-          # end volumeMounts
-      # end containers
     # end spec
   # end template
 # end spec

@@ -4,9 +4,7 @@ kind: Service
 metadata:
   name: {{ include "osdf-pelican-cache.fullname" . }}
   labels:
-    app: {{ template "osdf-pelican-cache.name" . }}
-    release: {{ .Release.Name }}
-    instance: {{ template "osdf-pelican-cache.fullname" . }}
+    {{- include "osdf-pelican-cache.labels" . | nindent 4 }}
   annotations:
     external-dns.alpha.kubernetes.io/hostname: {{ .Values.topologyFQDN | quote }}
     {{- with .Values.serviceAnnotations }}
@@ -33,7 +31,5 @@ spec:
       protocol: TCP
       targetPort: 443
   selector:
-    app: {{ template "osdf-pelican-cache.name" . }}
-    release: {{ .Release.Name }}
-    instance: {{ template "osdf-pelican-cache.fullname" . }}
+    {{- include "osdf-pelican-cache.selectorLabels" . | nindent 4 }}
 {{- end }}
