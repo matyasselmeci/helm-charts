@@ -1,0 +1,25 @@
+topologyResourceName: "ITB_OSDF_PELICAN_CACHE"
+topologyFQDN: "itb-osdf-pelican-cache.osgdev.chtc.io"
+
+directorURL: https://itb-osdf-director-origins.osgdev.chtc.io
+discoveryURL: https://itb-osdf-director.osgdev.chtc.io
+
+certmanager:
+  enabled: true
+  issuerName: letsencrypt-prod
+
+webserverPasswdSecret: itb-osdf-pelican-webserver-passwd
+
+cacheVolumeClaimName: itb-osdf-pelican-cache-data
+logging:
+  volumeClaimName: itb-odsf-pelican-cache-logging
+
+image:
+  tag: "v7.6.2"
+
+nodeSelector:
+  datacenter: wid-vlan5
+
+serviceAnnotations:
+  metallb.universe.tf/address-pool: tiger-vlan5
+
