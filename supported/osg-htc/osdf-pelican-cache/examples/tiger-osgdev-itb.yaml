@@ -14,8 +14,6 @@ certmanager:
 webserverPasswdSecret: itb-osdf-pelican-webserver-passwd
 
 cacheVolumeClaimName: itb-osdf-pelican-cache-data
-logging:
-  volumeClaimName: itb-odsf-pelican-cache-logging
 
 image:
   tag: "v7.6.2"
