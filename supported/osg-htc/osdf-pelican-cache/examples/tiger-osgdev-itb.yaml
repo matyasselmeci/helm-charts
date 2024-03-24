@@ -11,7 +11,9 @@ certmanager:
   enabled: true
   issuerName: letsencrypt-prod
 
-webserverPasswdSecret: itb-osdf-pelican-webserver-passwd
+webserver:
+  enabled: true
+  passwordSecret: itb-osdf-pelican-webserver-passwd
 
 cacheVolumeClaimName: itb-osdf-pelican-cache-data
 

@@ -12,7 +12,7 @@ data:
     Server:
       Hostname: {{ .Values.topologyFQDN }}
       Webport: 443
-      EnableUI: true
+      EnableUI: {{ .Values.webserver.enabled }}
       TLSCertificate: /etc/pelican/cert-orig/tls.crt
       TLSKey: /etc/pelican/cert-orig/tls.key
     Logging:

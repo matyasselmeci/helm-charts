@@ -71,7 +71,7 @@ spec:
               name: pelican-webui
               protocol: TCP
           volumeMounts:
-            {{- if .Values.webPasswordSecret }}
+            {{- if .Values.webserver.passwordSecret }}
             - mountPath: /etc/pelican/server-web-passwd
               name: webserver-passwd
               readOnly: true
@@ -94,14 +94,14 @@ spec:
       volumes:
         - name: topology-scitokens.cfg
           emptyDir: {}
-        {{- if .Values.webPasswordSecret }}
+        {{- if .Values.webserver.passwordSecret }}
         - name: webserver-passwd
           secret:
             items:
             - key: webserver-passwd
               mode: "0644"
               path: server-web-passwd
-          secretName: {{ .Values.webPasswordSecret }}
+          secretName: {{ .Values.webserver.passwordSecret }}
         {{ end }}
 
         - name: cache-data

@@ -18,8 +18,10 @@ certmanager:
 # "tls.key" and "tls.crt", respectively.
 hostCertKeySecret: null
 
-# Set webserverPasswdSecret to a Secret containing a single item named "webserver-passwd"
-webserverPasswdSecret: null
+webserver:
+  enabled: false
+  # Set passwordSecret to a Secret containing a single item named "webserver-passwd"
+  passwordSecret: null
 
 # Set this to be a PVC for the cache data
 cacheVolumeClaimName: null
