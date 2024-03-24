@@ -13,9 +13,9 @@ certmanager:
 
 webserverPasswdSecret: itb-osdf-pelican-webserver-passwd
 
-cacheVolume:
-  storage: 1000Gi
-  storageClassName: 3x-replica-nvme-raddus
+cacheVolumeClaimName: itb-osdf-pelican-cache-data
+logging:
+  volumeClaimName: itb-odsf-pelican-cache-logging
 
 image:
   tag: "v7.6.2"

@@ -105,8 +105,12 @@ spec:
         {{ end }}
 
         - name: cache-data
+        {{- if .Values.cacheVolumeClaimName }}
           persistentVolumeClaim:
-            claimName: {{ template "osdf-pelican-cache.cachepvcname" . }}
+            claimName: {{ .Values.cacheVolumeClaimName }}
+        {{- else }}
+          emptyDir: {}
+        {{- end }}
 
         {{- if or .Values.certmanager.enabled .Values.hostCertKeySecret }}
         - name: pelican-cache-ssl-cert

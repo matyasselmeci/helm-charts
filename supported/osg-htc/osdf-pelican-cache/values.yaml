@@ -22,15 +22,7 @@ hostCertKeySecret: null
 webserverPasswdSecret: null
 
 # Set this to be a PVC for the cache data
-cacheVolume:
-  # Set nameOverride to override the cache volume name
-  # (otherwise it will be the full name with "-data" at the end)
-  nameOverride: ""
-  # Set useExisting to true to not create a PVC.
-  # Otherwise, you must specify storage and storageClassName.
-  useExisting: false
-  storage: 1000Gi
-  storageClassName: null
+cacheVolumeClaimName: null
 
 logging:
   loglevel: "error"
