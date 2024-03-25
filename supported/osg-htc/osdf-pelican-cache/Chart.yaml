@@ -3,6 +3,6 @@ name: osdf-pelican-cache
 description: Pelican-Based OSDF Cache
 type: application
 
-version: "0.0.9"
+version: "0.0.11"
 
 appVersion: "v7.6.2"

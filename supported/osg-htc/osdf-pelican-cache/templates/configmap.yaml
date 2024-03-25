@@ -17,17 +17,26 @@ data:
       TLSKey: /etc/pelican/cert-orig/tls.key
     Logging:
       Cache:
+        Ofs: {{ .Values.logging.ofs }}
+        Pfc: {{ .Values.logging.pfc }}
+        Pss: {{ .Values.logging.pss }}
         Scitokens: {{ .Values.logging.scitokens }}
-        PSS: {{ .Values.logging.pss }}
+        Xrd: {{ .Values.logging.xrd }}
+        Xrootd: {{ .Values.logging.xrootd }}
       Level: {{ .Values.logging.loglevel }}
     Shoveler:
       Enable: {{ .Values.monitoringShoveler.enabled }}
     XRootD:
       SciTokensConfig: /etc/pelican/topology/scitokens.cfg
     Cache:
+      {{- with .Values.concurrency }}
+      Concurrency: {{ . }}
+      {{- end }}
       DataLocation: /cache
       Port: 8443
-    {{ if .Values.extraPelicanConfig }}
-{{ .Values.extraPelicanConfig | indent 4 }}
+      SelfTest: {{ .Values.selfTest.enabled }}
+      SelfTestInterval: {{ .Values.selfTest.interval }}
+    {{- with .Values.extraPelicanConfig }}
+{{- . | nindent 4 }}
     {{- end }}
 

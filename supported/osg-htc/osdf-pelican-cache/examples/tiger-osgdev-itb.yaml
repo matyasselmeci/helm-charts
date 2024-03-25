@@ -15,6 +15,12 @@ webserver:
   enabled: true
   passwordSecret: itb-osdf-pelican-webserver-passwd
 
+resources:
+  requests:
+    memory: 16Gi
+  limits:
+    memory: 24Gi
+
 cacheVolumeClaimName: itb-osdf-pelican-cache-data
 
 image:

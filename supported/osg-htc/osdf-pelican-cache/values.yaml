@@ -27,9 +27,24 @@ webserver:
 cacheVolumeClaimName: null
 
 logging:
-  loglevel: "error"
-  scitokens: "error"
+  # Valid values for loglevel are "Trace", "Debug", "Info", "Warn", "Error", "Fatal", and "Panic"
+  loglevel: "Error"
+  # logging values for individual cache components; valid values are "error", "info", and "debug"
+  ofs: "error"
+  pfc: "error"
   pss: "error"
+  scitokens: "error"
+  xrd: "error"
+  xrootd: "error"
+
+
+# Set concurrency to the maximum number of simultaneous connections, or "null" for no limit.
+concurrency: null
+
+
+selfTest:
+  enabled: true
+  interval: "15s"
 
 
 monitoringShoveler:
@@ -47,14 +62,8 @@ image:
 resources:
   requests:
     cpu: 1
-    memory: 16Gi
-  limits:
-    cpu: 1
     memory: 24Gi
 
-##########################
-# OPTIONAL CONFIGURATION #
-##########################
 
 # Extra environment variables for the cache container
 # extraEnv:
