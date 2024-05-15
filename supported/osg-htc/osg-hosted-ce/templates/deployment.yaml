@@ -124,7 +124,7 @@ spec:
       {{ end }}
       containers:
       - name: osg-hosted-ce
-        image: hub.opensciencegrid.org/opensciencegrid/hosted-ce:{{ .Values.ContainerTags.HostedCE }}
+        image: hub.opensciencegrid.org/{{ .Values.ContainerProjects.HostedCE }}/hosted-ce:{{ .Values.ContainerTags.HostedCE }}
         imagePullPolicy: Always
         volumeMounts:
         - name: osg-hosted-ce-{{ .Values.Instance }}-configuration

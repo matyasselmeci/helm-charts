@@ -215,6 +215,10 @@ Dashboard:
 ContainerTags:
   HostedCE: release
 
+# Choose which registry project to use for the specified containers
+ContainerProjects:
+  HostedCE: opensciencegrid
+
 Debug:
   # When 'ContinuOnError: true', ignore fatal errors on startup
   # (default: false)
