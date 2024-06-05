@@ -42,6 +42,11 @@ spec:
         persistentVolumeClaim:
           claimName: {{ .Values.Persistence.LibCondorCeVolume }}
       {{ end }}
+      {{ if .Values.Persistence.CondorCeLocalConfigVolume }}
+      - name: condor-ce-local-config
+        persistentVolumeClaim:
+          claimName: {{ .Values.Persistence.CondorCeLocalConfigVolume }}
+      {{ end }}
       - name: osg-hosted-ce-{{ .Values.Instance }}-configuration
         configMap:
           name: osg-hosted-ce-{{ .Values.Instance }}-configuration
@@ -149,6 +154,10 @@ spec:
         {{ if .Values.Persistence.LibCondorCeVolume }}
         - name: lib-condor-ce
           mountPath: /var/lib/condor-ce
+        {{ end }}
+        {{ if .Values.Persistence.CondorCeLocalConfigVolume }}
+        - name: condor-ce-local-config
+          mountPath: /etc/condor-ce/local-config.d
         {{ end }}
         {{ if .Values.HostCredentials.HostCertKeySecret }}
         - name: osg-hosted-ce-hostcertkey-volume
