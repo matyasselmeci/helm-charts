@@ -37,7 +37,7 @@ Common labels
 helm.sh/chart: {{ include "pelican-cache.chart" . }}
 {{ include "pelican-cache.selectorLabels" . }}
 {{- with .Values.federation.name }}
-{{ . | quote }}
+federation: {{ . | quote }}
 {{- end }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}

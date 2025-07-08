@@ -33,23 +33,22 @@ logging:
 
 # These are the names of Secrets
 secrets:
+  # This should have a single "issuer.pem"
   issuerKey: ""
-  # The certificate and key
+  # The SSL/TLS certificate and key (tls.crt, tls.key)
   sslCertificate: ""
   # The admin password for the webserver
   webserverPassword: ""
 
+# To persist monitoring information, you must have a volume for it; the recommended size is 20 GiB
+monitoringVolume: ""
+
+# To persist the namespace key, you must have a volume for it
 namespaceKeyVolume: ""
 
-# This is for setting Kubernetes Annotations to a Pod.
-# For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/ 
-podAnnotations: {}
-# This is for setting Kubernetes Labels to a Pod.
-# For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
-podLabels: {}
 
-podSecurityContext: {}
-  # fsGroup: 2000
+podAnnotations: {}
+podLabels: {}
 
 securityContext: {}
   # capabilities:
@@ -76,7 +75,7 @@ resources: {}
   #   memory: 128Mi
 
 # Turn this on to sleep forever instead of running the cache, for debugging
-sleep: false
+sleepForever: false
 
 # Additional volumes on the output Deployment definition.
 volumes: []

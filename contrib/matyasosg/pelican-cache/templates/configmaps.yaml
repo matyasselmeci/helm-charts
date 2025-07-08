@@ -26,7 +26,6 @@ data:
   pelican.yaml: |
     ---
     ConfigLocations:
-      - "/usr/share/pelican/config.d"
       - "/etc/pelican/config.d"
 
     IssuerKeysDirectory: "/etc/pelican/issuer-keys"

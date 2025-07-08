@@ -24,17 +24,15 @@ spec:
         {{- end }}
     spec:
       enableServiceLinks: false
-      securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
-          {{- if .Values.sleep }}
+          {{- if .Values.sleepForever }}
           args: ["infinity"]
           command: ["/bin/sleep"]
           {{- end }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default (printf "v%s" .Chart.AppVersion) }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: pelican
@@ -57,8 +55,14 @@ spec:
               monutPath: /etc/pelican/issuer-keys
             - name: logging-volume
               mountPath: /var/log/pelican
+            {{- if .Values.monitoringVolume }}
+            - name: monitoring-volume
+              mountPath: /var/lib/pelican/monitoring/data
+            {{- end }}
+            {{- if .Values.namespaceKeyVolume }}
             - name: namespace-key
               mountPath: /etc/pelican/jwks
+            {{- end }}
             - name: ssl-certificate
               mountPath: /etc/pelican/cert-orig
             - name: webserver-password
@@ -102,7 +106,6 @@ spec:
         - name: cache-data
           persistentVolumeClaim:
             claimName: {{ .Values.cache.volume }}
-
         - name: default-config
           configMap:
             name: {{- include "pelican-cache.fullname" . }}-default
@@ -110,29 +113,30 @@ spec:
             - key: pelican.yaml
               mode: 0o644
               path: pelican.yaml
-
         - name: instance-config
           configMap:
             name: {{- include "pelican-cache.fullname" . }}-instance
-
         - name: issuer-keys
           secret:
             items:
             - key: issuer.pem
               mode: 0o600
               path: issuer.pem
-
         - name: logging-volume
           persistentVolumeClaim:
             claimName: {{ .Values.logging.volume }}
-
         - name: logrotate-config
           configMap: {{ include "pelican-cache.fullname" . }}-logrotate
-
+        {{- with .Values.monitoringVolume }}
+        - name: monitoring-volume
+          persistentVolumeClaim:
+            claimName: {{ . }}
+        {{- end }}
+        {{- if .Values.namespaceKeyVolume }}
         - name: namespace-key
           persistentVolumeClaim:
             claimName: {{ .Values.namespaceKeyVolume }}
-
+        {{- end }}
         - name: ssl-certificate
           secret:
             items:
@@ -143,7 +147,6 @@ spec:
               mode: 0o600
               path: tls.key
             secretName: {{ .Values.secrets.sslCertificate }}
-
         - name: webserver-password
           secret:
             items:
