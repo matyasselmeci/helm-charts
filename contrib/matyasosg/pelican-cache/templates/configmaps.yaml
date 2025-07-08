@@ -1,0 +1,80 @@
+---
+{{- if .Values.logging.persistence.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "pelican-cache.fullname" . }}-logrotate
+  labels:
+    {{- include "pelican-cache.labels" . | nindent 4 }}
+data:
+  pelican.logrotate: |
+    /var/log/pelican/*.log {
+        compress
+        copytruncate
+        size 500M
+        missingok
+        notifempty
+        rotate 10
+    }
+---
+{{- end }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "pelican-cache.fullname" . }}-default
+  labels:
+    {{- include "pelican-cache.labels" . | nindent 4 }}
+data:
+  pelican.yaml: |
+    ---
+    ConfigLocations:
+      - "/etc/pelican/config.d"
+
+    IssuerKeysDirectory: "/etc/pelican/issuer-keys"
+
+    Cache:
+      StorageLocation: "/cache"
+      Port: 8443
+
+    Server:
+      WebPort: 443
+      TlsCertificate: "/etc/pelican/cert-orig/tls.crt"
+      TlsKey: "/etc/pelican/cert-orig/tls.key"
+
+    Logging:
+      {{- if .Values.logging.persistence.enabled }}
+      LogLocation: "/var/log/pelican/pelican.log"
+      {{- end }}
+      Level: "INFO"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "pelican-cache.fullname" . }}-instance
+  labels:
+    {{- include "pelican-cache.labels" . | nindent 4 }}
+data:
+  50-instance.yaml: |
+    ---
+    Federation:
+      DiscoveryUrl: {{ .Values.federation.discoveryUrl }}
+
+    Logging:
+      Level: {{ .Values.logging.level }}
+      {{- with .Values.logging.sublevels }}
+      Cache:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+    Server:
+      Hostname: {{ .Values.hostname }}
+      {{- with .Values.issuerUrl }}
+      IssuerUrl: {{ . }}
+      {{- end }}
+
+    {{- with .Values.xrootdSitename }}
+    Xrootd:
+      # Topology Resource Name
+      Sitename: {{ . }}
+    {{- end }}
+

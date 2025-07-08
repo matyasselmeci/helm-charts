@@ -1,0 +1,401 @@
+apiVersion: v1
+data:
+  50-instance.yaml: |
+    ---
+    Federation:
+      DiscoveryUrl: https://osdf-itb.osg-htc.org
+
+    IssuerKeysDirectory: /etc/pelican/issuer-keys
+
+    Logging:
+      Level: debug
+
+    Server:
+      Hostname: itb-osdf-pelican-cache-2.osdf-dev.chtc.io
+
+    Xrootd:
+      Sitename: ITB-OSDF-PELICAN-CACHE-2
+
+    Cache:
+      EnableLotman: true
+      # These values set based on 16Gi of disk, defined in cache-pvc-patch.yaml
+      HighWaterMark: 4.5g # 95%
+      LowWaterMark: 3.0g # 90%
+      # Still exploring good values for File*Size params. The FilesMaxSize param
+      # must be lower than the low water mark. They are used to explicitly track
+      # space tied to the mount where cache data is served, whereas HWM/LWM view
+      # all disks available to the cache (where things like host OS, pelican, etc live).
+      # For more info on these params, search for "diskusage" in the xrootd pfc docs:
+      # https://xrootd.web.cern.ch/doc/dev56/pss_config.pdf
+      FilesMaxSize: 2.9g
+      FilesNominalSize: 2.5g
+      FilesBaseSize: 2.0g
+
+
+    Lotman:
+      LotHome: /var/lib/pelican/lotman
+kind: ConfigMap
+metadata:
+  labels:
+    instance: itb-osdf-pelican-cache-2
+  name: itb-instance-config-2-cdtk6hf4tm
+---
+apiVersion: v1
+data:
+  pelican.logrotate: |
+    /var/log/pelican/*.log {
+        compress
+        copytruncate
+        size 500M
+        missingok
+        notifempty
+        rotate 10
+    }
+kind: ConfigMap
+metadata:
+  labels:
+    app: pelican-cache
+    federation: osdf
+    instance: itb-osdf-pelican-cache-2
+  name: itb-osdf-cache-log-rotate-2-6f7f6k52k7
+---
+apiVersion: v1
+data:
+  pelican.yaml: |
+    ---
+    ConfigLocations:
+      - "/usr/share/pelican/config.d"
+      - "/etc/pelican/config.d"
+
+    IssuerKey: "/etc/pelican/jwks/issuer.jwk"
+
+    Cache:
+      DataLocation: "/cache"
+      Port: 8443
+
+    Server:
+      WebPort: 443
+      TlsCertificate: "/etc/pelican/cert-orig/tls.crt"
+      TlsKey: "/etc/pelican/cert-orig/tls.key"
+
+    Logging:
+      LogLocation: "/var/log/pelican/pelican.log"
+      Level: "INFO"
+kind: ConfigMap
+metadata:
+  labels:
+    app: pelican-cache
+    federation: osdf
+    instance: itb-osdf-pelican-cache-2
+  name: itb-osdf-default-config-2-47mk22297t
+---
+apiVersion: v1
+data:
+  10-osdf.yaml: |
+    ---
+    Federation:
+      DiscoveryUrl: "https://osg-htc.org"
+kind: ConfigMap
+metadata:
+  labels:
+    federation: osdf
+    instance: itb-osdf-pelican-cache-2
+  name: itb-osdf-overlay-config-2-kt57b9d669
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: itb-osdf-pelican-cache-2.osdf-dev.chtc.io
+  labels:
+    app: pelican-cache
+    federation: osdf
+    instance: itb-osdf-pelican-cache-2
+  name: itb-osdf-pelican-cache-2
+spec:
+  externalTrafficPolicy: Local
+  ports:
+  - name: pelican
+    port: 8443
+    protocol: TCP
+    targetPort: pelican
+  - name: pelican-cvmfs
+    port: 8000
+    protocol: TCP
+    targetPort: pelican-cvmfs
+  - name: pelican-webui
+    port: 443
+    protocol: TCP
+    targetPort: pelican-webui
+  selector:
+    app: pelican-cache
+    federation: osdf
+    instance: itb-osdf-pelican-cache-2
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app: pelican-cache
+    federation: osdf
+    instance: itb-osdf-pelican-cache-2
+  name: itb-osdf-pelican-cache-data-2
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 16Gi
+  storageClassName: 3x-replica-block
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app: pelican-cache
+    federation: osdf
+    instance: itb-osdf-pelican-cache-2
+  name: itb-osdf-pelican-cache-logging-2
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: 3x-replica-block
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app: pelican-cache
+    federation: osdf
+    instance: itb-osdf-pelican-cache-2
+  name: itb-osdf-pelican-cache-namespace-key-2
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Mi
+  storageClassName: 3x-replica-block
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    instance: itb-osdf-pelican-cache-2
+  name: itb-pelican-lotman-data-2
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: 3x-replica-block
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: pelican-cache
+    federation: osdf
+    instance: itb-osdf-pelican-cache-2
+  name: itb-osdf-pelican-cache-2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pelican-cache
+      federation: osdf
+      instance: itb-osdf-pelican-cache-2
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: pelican-cache
+        federation: osdf
+        instance: itb-osdf-pelican-cache-2
+    spec:
+      containers:
+      - args:
+        - infinity
+        command:
+        - /bin/sleep
+        image: hub.opensciencegrid.org/pelican_platform/cache:v7.16.7-rc.1
+        imagePullPolicy: Always
+        name: pelican-cache
+        ports:
+        - containerPort: 8443
+          name: pelican
+          protocol: TCP
+        - containerPort: 443
+          name: pelican-webui
+          protocol: TCP
+        resources:
+          requests:
+            cpu: 1000m
+            memory: 16Gi
+        securityContext:
+          capabilities:
+            add:
+            - SYS_PTRACE
+        volumeMounts:
+        - mountPath: /etc/pelican/issuer-keys/issuer.pem
+          name: osdf-pelican-cache-issuer-keys
+          subPath: issuer.pem
+        - mountPath: /var/lib/pelican/lotman
+          name: lotman-data
+        - mountPath: /usr/share/pelican/config.d
+          name: overlay-config
+        - mountPath: /etc/pelican/pelican.yaml
+          name: default-config
+          subPath: pelican.yaml
+        - mountPath: /etc/pelican/config.d
+          name: instance-config
+        - mountPath: /cache
+          name: cache-data
+        - mountPath: /var/log/pelican
+          name: logging-volume
+        - mountPath: /etc/pelican/jwks
+          name: namespace-key
+        - mountPath: /etc/pelican/cert-orig
+          name: pelican-cache-ssl-cert
+      - image: hub.opensciencegrid.org/pelican_platform/port-redirector:latest
+        imagePullPolicy: Always
+        name: cvmfs-redirector
+        ports:
+        - containerPort: 8000
+          name: pelican-cvmfs
+        resources:
+          requests:
+            cpu: "1"
+            memory: 1Gi
+      - image: hub.opensciencegrid.org/opensciencegrid/logrotate:23-release-20240809-1900
+        name: logrotate
+        resources:
+          limits:
+            cpu: "2"
+            memory: 2G
+          requests:
+            cpu: "1"
+            memory: 500M
+        volumeMounts:
+        - mountPath: /var/log/pelican
+          name: logging-volume
+        - mountPath: /etc/logrotate.d/
+          name: log-rotate-config
+      enableServiceLinks: false
+      volumes:
+      - name: osdf-pelican-cache-issuer-keys
+        secret:
+          items:
+          - key: issuer.pem
+            mode: 384
+            path: issuer.pem
+          secretName: osdf-pelican-cache-issuer-keys
+      - name: lotman-data
+        persistentVolumeClaim:
+          claimName: itb-pelican-lotman-data-2
+      - configMap:
+          name: itb-osdf-overlay-config-2-kt57b9d669
+        name: overlay-config
+      - name: pelican-cache-ssl-cert
+        secret:
+          items:
+          - key: tls.crt
+            mode: 420
+            path: tls.crt
+          - key: tls.key
+            mode: 384
+            path: tls.key
+          secretName: itb-osdf-pelican-cache-cert-2
+      - configMap:
+          items:
+          - key: pelican.yaml
+            mode: 420
+            path: pelican.yaml
+          name: itb-osdf-default-config-2-47mk22297t
+        name: default-config
+      - configMap:
+          name: itb-instance-config-2-cdtk6hf4tm
+        name: instance-config
+      - name: cache-data
+        persistentVolumeClaim:
+          claimName: itb-osdf-pelican-cache-data-2
+      - name: logging-volume
+        persistentVolumeClaim:
+          claimName: itb-osdf-pelican-cache-logging-2
+      - name: namespace-key
+        persistentVolumeClaim:
+          claimName: itb-osdf-pelican-cache-namespace-key-2
+      - configMap:
+          name: itb-osdf-cache-log-rotate-2-6f7f6k52k7
+        name: log-rotate-config
+---
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  creationTimestamp: null
+  labels:
+    instance: itb-osdf-pelican-cache-2
+  name: itb-osdf-pelican-cache-issuer-keys-2
+  namespace: osdf-dev
+spec:
+  encryptedData:
+    issuer.pem: AgCPoJN7+Axgmo6+HCIS8zeq0qJqenlrFqFTziA7cOgIWr+BwKVEgeoUQHzAu1ZmIl/AqIRTsDhbR3puGqr3KBqh8+VV6jkKHo6d8CZk+U4P7EgfLr1uBBPNbrX6/BnC0zG+wAxy39HLnqlyC+JX7fR2373YKrgdPmcgYxQSY1EDkX43YY5O/2wy2fV8ewng8XXJ19jw5FNeD+ekBkUtvShKMV9HwzyLkTHb2LiZV5vGv84R2doKStXPRsAehkil3LZ/US/mThXp7FAUr7MiUwFZhrjABzrEAUVijA2DEGId7/YsPbCwxXQZnJSXQ/XmaKrj1SQbeT+zYE/JtD965ofuld9buWcZKaeSwH+QeW/Q0JjplTvYH/gf+1MZIl1GVarND6HuLb87Trm4BZepg3IAmV26qldMHzkWoT0emDML3klpvyB04GzT2B61Zf57DOTSLbnbDOji7kMtEZiRZ7RHTVqShx1ODLZw88Ke3Qqwa9CaUjkeAFTLugFRcQRb+VKotjVZlKC3B1IBqBSd0Zuv+qd/4QxsllwxJmd2Q+ZqPEMBDdg7ZdQa5vh2UUWU7Zi4lFM4YBDqFXr599OctHKFY9XkYaCv7GFhSIiFlyGRf6PTXNuteucoQmbeiGB5wmItL47C5NgAaQmpU/shtcwdZtS4/z1V7/Ckt+T7Ti22zjAFaQpqPSPMejhgeOnC7lVqFV1ePxvRrMVdq2kQBHspWKhWYBmTItnMjlwKNO53BbseoV1YBu6R8tGSPD6bK5x43jesXHbMz+Q2IdbPKqQzD3SaCGg4RTKMIWjK1HLYC6r3pJqnBmahCkGXYlauQ8gd3KGd1L4ld3+b3nVtP01Z5pu1Mif43U9iHwouGqXDtmxORpoegG0skdwZ1YvUuEfnSSQ6Y+4++1zpplifMtv5Wen9R1AN/JlJXbujUouBFK47vANoAhotDDohtxJ4MAPADF/luIH3V6wOmLXG9Jg4XMFrPskFJxM6LreTiDpFB+KrZ/7yDIHhU35RaO0a+l6Z
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        instance: itb-osdf-pelican-cache-2
+      name: itb-osdf-pelican-cache-issuer-keys-2
+      namespace: osdf-dev
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  labels:
+    app: pelican-cache
+    federation: osdf
+    instance: itb-osdf-pelican-cache-2
+  name: itb-osdf-pelican-cache-cert-2
+spec:
+  commonName: itb-osdf-pelican-cache-2.osdf-dev.chtc.io
+  dnsNames:
+  - itb-osdf-pelican-cache-2.osdf-dev.chtc.io
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt-prod
+  secretName: itb-osdf-pelican-cache-cert-2
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  labels:
+    app: pelican-cache
+    federation: osdf
+    instance: itb-osdf-pelican-cache-2
+  name: itb-osdf-pelican-cache-2
+spec:
+  egress:
+  - {}
+  ingress:
+  - from: null
+    ports:
+    - port: 8443
+      protocol: TCP
+    - port: 8000
+      protocol: TCP
+    - port: 443
+      protocol: TCP
+  podSelector:
+    matchLabels:
+      app: pelican-cache
+      federation: osdf
+      instance: itb-osdf-pelican-cache-2
+  policyTypes:
+  - Ingress
+  - Egress

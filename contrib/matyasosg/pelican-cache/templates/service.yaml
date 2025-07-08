@@ -1,0 +1,33 @@
+{{- if .Values.service.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "pelican-cache.fullname" . }}
+  labels:
+    {{- include "pelican-cache.labels" . | nindent 4 }}
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: {{ .Values.hostname }}
+  {{- with .Values.service.annotations }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  externalTrafficPolicy: local
+  ports:
+    - name: pelican
+      port: 8443
+      protocol: TCP
+      targetPort: pelican
+    {{- if .Values.cvmfsCompatEnabled }}
+    - name: pelican-cvmfs
+      port: 8000
+      protocol: TCP
+      targetPort: pelican-cvmfs
+    {{- end }}
+    - name: pelican-webui
+      port: 443
+      protocol: TCP
+      targetPort: pelican-webui
+  selector:
+    {{- include "pelican-cache.selectorLabels" . | nindent 4 }}
+  type: LoadBalancer
+{{- end }}

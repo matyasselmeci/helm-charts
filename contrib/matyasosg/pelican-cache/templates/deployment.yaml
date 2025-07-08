@@ -1,0 +1,177 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "pelican-cache.fullname" . }}
+  labels:
+    {{- include "pelican-cache.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "pelican-cache.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "pelican-cache.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: {{ .Chart.Name }}
+          {{- if .Values.sleepForever }}
+          args: ["infinity"]
+          command: ["/bin/sleep"]
+          {{- end }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default (printf "v%s" .Chart.AppVersion) }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: pelican
+              containerPort: 8443
+              protocol: TCP
+            - name: pelican-webui
+              containerPort: 443
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: cache-data
+              mountPath: /cache
+            - name: default-config
+              mountPath: /etc/pelican/pelican.yaml
+              subPath: pelican.yaml
+            - name: instance-config
+              mountPath: /etc/pelican/config.d
+            - name: issuer-keys
+              monutPath: /etc/pelican/issuer-keys
+            {{- if .Values.logging.persistence.enabled }}
+            - name: logging-volume
+              mountPath: /var/log/pelican
+            {{- end }}
+            {{- if .Values.monitoringVolume }}
+            - name: monitoring-volume
+              mountPath: /var/lib/pelican/monitoring/data
+            {{- end }}
+            {{- if .Values.namespaceKeyVolume }}
+            - name: namespace-key
+              mountPath: /etc/pelican/jwks
+            {{- end }}
+            - name: ssl-certificate
+              mountPath: /etc/pelican/cert-orig
+            - name: webserver-password
+              mountPath: /etc/pelican/server-web-passwd
+              readOnly: true
+              subPath: server-web-passwd
+          {{- with .Values.volumeMounts }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+
+        {{- if .Values.cvmfsCompatEnabled }}
+        - name: cvmfs-redirector
+          image: hub.opensciencegrid.org/pelican_platform/port-redirector:latest
+          imagePullPolicy: Always
+          ports:
+          - containerPort: 8000
+            name: pelican-cvmfs
+          resources:
+            requests:
+              cpu: "1"
+              memory: 1Gi
+        {{- end }}
+
+        {{- if .Values.logging.persistence.enabled }}
+        - name: logrotate
+          image: hub.opensciencegrid.org/opensciencegrid/logrotate:24-release
+          imagePullPolicy: Always
+          resources:
+            limits:
+              cpu: "2"
+              memory: 2G
+            requests:
+              cpu: "1"
+              memory: 500M
+          volumeMounts:
+          - mountPath: /var/log/pelican
+            name: logging-volume
+          - mountPath: /etc/logrotate.d/
+            name: logrotate-config
+        {{- end }}
+
+      volumes:
+        - name: cache-data
+          persistentVolumeClaim:
+            claimName: {{ .Values.cache.volume }}
+        - name: default-config
+          configMap:
+            name: {{ include "pelican-cache.fullname" . }}-default
+            items:
+            - key: pelican.yaml
+              mode: 0o644
+              path: pelican.yaml
+        - name: instance-config
+          configMap:
+            name: {{ include "pelican-cache.fullname" . }}-instance
+        - name: issuer-keys
+          secret:
+            items:
+            - key: issuer.pem
+              mode: 0o600
+              path: issuer.pem
+        {{- if .Values.logging.persistence.enabled }}
+        - name: logging-volume
+          persistentVolumeClaim:
+            claimName: {{ .Values.logging.persistence.volume }}
+        - name: logrotate-config
+          configMap: {{ include "pelican-cache.fullname" . }}-logrotate
+        {{- end }}
+        {{- with .Values.monitoringVolume }}
+        - name: monitoring-volume
+          persistentVolumeClaim:
+            claimName: {{ . }}
+        {{- end }}
+        {{- with .Values.namespaceKeyVolume }}
+        - name: namespace-key
+          persistentVolumeClaim:
+            claimName: {{ . }}
+        {{- end }}
+        - name: ssl-certificate
+          secret:
+            items:
+            - key: tls.crt
+              mode: 0o644
+              path: tls.crt
+            - key: tls.key
+              mode: 0o600
+              path: tls.key
+            secretName: {{ .Values.secrets.sslCertificate }}
+        - name: webserver-password
+          secret:
+            items:
+            - key: webserver-passwd
+              mode: 0o644
+              path: server-web-passwd
+              secretName: {{ .Values.secrets.webserverPassword }}
+      {{- with .Values.volumes }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
