@@ -46,17 +46,33 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
-            - mountPath: /cache
-              name: cache-data
-            - mountPath: /var/log/pelican
-              name: logging-volume
+            - name: cache-data
+              mountPath: /cache
+            - name: default-config
+              mountPath: /etc/pelican/pelican.yaml
+              subPath: pelican.yaml
+            - name: instance-config
+              mountPath: /etc/pelican/config.d
+            - name: issuer-keys
+              monutPath: /etc/pelican/issuer-keys
+            - name: logging-volume
+              mountPath: /var/log/pelican
+            - name: namespace-key
+              mountPath: /etc/pelican/jwks
+            - name: ssl-certificate
+              mountPath: /etc/pelican/cert-orig
+            - name: webserver-password
+              mountPath: /etc/pelican/server-web-passwd
+              readOnly: true
+              subPath: server-web-passwd
           {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
+
       {{- if .Values.cvmfsCompatEnabled }}
-      - image: hub.opensciencegrid.org/pelican_platform/port-redirector:latest
+      - name: cvmfs-redirector
+        image: hub.opensciencegrid.org/pelican_platform/port-redirector:latest
         imagePullPolicy: Always
-        name: cvmfs-redirector
         ports:
         - containerPort: 8000
           name: pelican-cvmfs
@@ -65,9 +81,10 @@ spec:
             cpu: "1"
             memory: 1Gi
       {{- end }}
-      - image: hub.opensciencegrid.org/opensciencegrid/logrotate:24-release
+
+      - name: logrotate
+        image: hub.opensciencegrid.org/opensciencegrid/logrotate:24-release
         imagePullPolicy: Always
-        name: logrotate
         resources:
           limits:
             cpu: "2"
@@ -85,11 +102,55 @@ spec:
         - name: cache-data
           persistentVolumeClaim:
             claimName: {{ .Values.cache.volume }}
+
+        - name: default-config
+          configMap:
+            name: {{- include "pelican-cache.fullname" . }}-default
+            items:
+            - key: pelican.yaml
+              mode: 0o644
+              path: pelican.yaml
+
+        - name: instance-config
+          configMap:
+            name: {{- include "pelican-cache.fullname" . }}-instance
+
+        - name: issuer-keys
+          secret:
+            items:
+            - key: issuer.pem
+              mode: 0o600
+              path: issuer.pem
+
         - name: logging-volume
           persistentVolumeClaim:
             claimName: {{ .Values.logging.volume }}
-        - configMap: {{ include "pelican-cache.fullname" . }}-logrotate
-          name: logrotate-config
+
+        - name: logrotate-config
+          configMap: {{ include "pelican-cache.fullname" . }}-logrotate
+
+        - name: namespace-key
+          persistentVolumeClaim:
+            claimName: {{ .Values.namespaceKeyVolume }}
+
+        - name: ssl-certificate
+          secret:
+            items:
+            - key: tls.crt
+              mode: 0o644
+              path: tls.crt
+            - key: tls.key
+              mode: 0o600
+              path: tls.key
+            secretName: {{ .Values.secrets.sslCertificate }}
+
+        - name: webserver-password
+          secret:
+            items:
+            - key: webserver-passwd
+              mode: 0o644
+              path: server-web-passwd
+              secretName: {{ .Values.secrets.webserverPassword }}
       {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
