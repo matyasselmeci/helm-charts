@@ -53,8 +53,10 @@ spec:
               mountPath: /etc/pelican/config.d
             - name: issuer-keys
               monutPath: /etc/pelican/issuer-keys
+            {{- if .Values.logging.persistence.enabled }}
             - name: logging-volume
               mountPath: /var/log/pelican
+            {{- end }}
             {{- if .Values.monitoringVolume }}
             - name: monitoring-volume
               mountPath: /var/lib/pelican/monitoring/data
@@ -73,34 +75,36 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
 
-      {{- if .Values.cvmfsCompatEnabled }}
-      - name: cvmfs-redirector
-        image: hub.opensciencegrid.org/pelican_platform/port-redirector:latest
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 8000
-          name: pelican-cvmfs
-        resources:
-          requests:
-            cpu: "1"
-            memory: 1Gi
-      {{- end }}
+        {{- if .Values.cvmfsCompatEnabled }}
+        - name: cvmfs-redirector
+          image: hub.opensciencegrid.org/pelican_platform/port-redirector:latest
+          imagePullPolicy: Always
+          ports:
+          - containerPort: 8000
+            name: pelican-cvmfs
+          resources:
+            requests:
+              cpu: "1"
+              memory: 1Gi
+        {{- end }}
 
-      - name: logrotate
-        image: hub.opensciencegrid.org/opensciencegrid/logrotate:24-release
-        imagePullPolicy: Always
-        resources:
-          limits:
-            cpu: "2"
-            memory: 2G
-          requests:
-            cpu: "1"
-            memory: 500M
-        volumeMounts:
-        - mountPath: /var/log/pelican
-          name: logging-volume
-        - mountPath: /etc/logrotate.d/
-          name: logrotate-config
+        {{- if .Values.logging.persistence.enabled }}
+        - name: logrotate
+          image: hub.opensciencegrid.org/opensciencegrid/logrotate:24-release
+          imagePullPolicy: Always
+          resources:
+            limits:
+              cpu: "2"
+              memory: 2G
+            requests:
+              cpu: "1"
+              memory: 500M
+          volumeMounts:
+          - mountPath: /var/log/pelican
+            name: logging-volume
+          - mountPath: /etc/logrotate.d/
+            name: logrotate-config
+        {{- end }}
 
       volumes:
         - name: cache-data
@@ -108,34 +112,36 @@ spec:
             claimName: {{ .Values.cache.volume }}
         - name: default-config
           configMap:
-            name: {{- include "pelican-cache.fullname" . }}-default
+            name: {{ include "pelican-cache.fullname" . }}-default
             items:
             - key: pelican.yaml
               mode: 0o644
               path: pelican.yaml
         - name: instance-config
           configMap:
-            name: {{- include "pelican-cache.fullname" . }}-instance
+            name: {{ include "pelican-cache.fullname" . }}-instance
         - name: issuer-keys
           secret:
             items:
             - key: issuer.pem
               mode: 0o600
               path: issuer.pem
+        {{- if .Values.logging.persistence.enabled }}
         - name: logging-volume
           persistentVolumeClaim:
-            claimName: {{ .Values.logging.volume }}
+            claimName: {{ .Values.logging.persistence.volume }}
         - name: logrotate-config
           configMap: {{ include "pelican-cache.fullname" . }}-logrotate
+        {{- end }}
         {{- with .Values.monitoringVolume }}
         - name: monitoring-volume
           persistentVolumeClaim:
             claimName: {{ . }}
         {{- end }}
-        {{- if .Values.namespaceKeyVolume }}
+        {{- with .Values.namespaceKeyVolume }}
         - name: namespace-key
           persistentVolumeClaim:
-            claimName: {{ .Values.namespaceKeyVolume }}
+            claimName: {{ . }}
         {{- end }}
         - name: ssl-certificate
           secret:

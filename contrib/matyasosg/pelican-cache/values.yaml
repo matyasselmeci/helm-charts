@@ -28,8 +28,11 @@ image:
 
 logging:
   level: info
-  volume: ""
-  cache: {}
+  sublevels: {}
+    # Scitokens: trace
+  persistence:
+    enabled: true
+    volume: ""
 
 # These are the names of Secrets
 secrets:

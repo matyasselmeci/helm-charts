@@ -1,4 +1,5 @@
 ---
+{{- if .Values.logging.persistence.enabled }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -16,6 +17,7 @@ data:
         rotate 10
     }
 ---
+{{- end }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -40,7 +42,9 @@ data:
       TlsKey: "/etc/pelican/cert-orig/tls.key"
 
     Logging:
+      {{- if .Values.logging.persistence.enabled }}
       LogLocation: "/var/log/pelican/pelican.log"
+      {{- end }}
       Level: "INFO"
 ---
 apiVersion: v1
@@ -57,19 +61,20 @@ data:
 
     Logging:
       Level: {{ .Values.logging.level }}
-    {{- with .Values.logging.cache }}
-      {{- toYaml . | nindent 6 }}
-    {{- end }}
+      {{- with .Values.logging.sublevels }}
+      Cache:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
 
     Server:
       Hostname: {{ .Values.hostname }}
-    {{- if .Values.issuerUrl }}
-      IssuerUrl: {{ .Values.issuerUrl }}
-    {{- end }}
+      {{- with .Values.issuerUrl }}
+      IssuerUrl: {{ . }}
+      {{- end }}
 
-    {{- if .Values.xrootdSitename }}
+    {{- with .Values.xrootdSitename }}
     Xrootd:
       # Topology Resource Name
-      Sitename: {{ .Values.xrootdSitename }}
+      Sitename: {{ . }}
     {{- end }}
 
