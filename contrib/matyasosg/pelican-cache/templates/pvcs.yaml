@@ -1,0 +1,54 @@
+{{- if and .Values.logging.persistence.enabled (not .Values.logging.persistence.existingClaim) }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "pelican-cache.fullname" . }}-logging
+  labels:
+    {{- include "pelican-cache.labels" . | nindent 4 }}
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.logging.persistence.size | quote }}
+  storageClassName: {{ .Values.logging.persistence.storageClass | quote }}
+...
+{{- end }}
+
+
+{{- if and .Values.monitoring.persistence.enabled (not .Values.monitoring.persistence.existingClaim) }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "pelican-cache.fullname" . }}-monitoring
+  labels:
+    {{- include "pelican-cache.labels" . | nindent 4 }}
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.monitoring.persistence.size | quote }}
+  storageClassName: {{ .Values.monitoring.persistence.storageClass | quote }}
+...
+{{- end }}
+
+{{- if and .Values.namespaceKey.persistence.enabled (not .Values.namespaceKey.persistence.existingClaim) }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "pelican-cache.fullname" . }}-namespacekey
+  labels:
+    {{- include "pelican-cache.labels" . | nindent 4 }}
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.namespaceKey.persistence.size | quote }}
+  storageClassName: {{ .Values.namespaceKey.persistence.storageClass | quote }}
+...
+{{- end }}
