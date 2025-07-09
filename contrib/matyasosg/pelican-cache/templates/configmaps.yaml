@@ -14,7 +14,7 @@ data:
         size 500M
         missingok
         notifempty
-        rotate 10
+        rotate {{ .Values.logging.persistence.rotateCount }}
     }
 ---
 {{- end }}
@@ -40,12 +40,6 @@ data:
       WebPort: 443
       TlsCertificate: "/etc/pelican/cert-orig/tls.crt"
       TlsKey: "/etc/pelican/cert-orig/tls.key"
-
-    Logging:
-      {{- if .Values.logging.persistence.enabled }}
-      LogLocation: "/var/log/pelican/pelican.log"
-      {{- end }}
-      Level: "INFO"
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -60,6 +54,9 @@ data:
       DiscoveryUrl: {{ .Values.federation.discoveryUrl }}
 
     Logging:
+      {{- if .Values.logging.persistence.enabled }}
+      LogLocation: "/var/log/pelican/pelican.log"
+      {{- end }}
       Level: {{ .Values.logging.level }}
       {{- with .Values.logging.sublevels }}
       Cache:

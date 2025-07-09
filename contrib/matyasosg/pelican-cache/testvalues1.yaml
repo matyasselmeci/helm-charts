@@ -1,0 +1,32 @@
+# Based on itb-osdf-pelican-cache
+
+federation:
+  name: itb-osdf
+  discoveryUrl: https://osdf-itb.osg-htc.org
+
+hostname: itb-osdf-pelican-cache-2.osdf-dev.chtc.io
+cache:
+  dataVolume: itb-osdf-pelican-cache-data-2
+
+logging:
+  persistence:
+    storageClass: 3x-replica-block
+
+monitoring:
+  persistence:
+    storageClass: 3x-replica-block
+
+namespaceKey:
+  persistence:
+    storageClass: 3x-replica-block
+
+secrets:
+  issuerKey: osdf-pelican-cache-issuer-keys
+  sslCertificate: itb-osdf-pelican-cache-cert-2
+  webserverPassword: itb-osdf-pelican-cache-webserver-passwd-2
+
+resources:
+  requests:
+    cpu: 1000m
+    memory: 16Gi
+

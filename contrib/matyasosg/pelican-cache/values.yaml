@@ -11,12 +11,14 @@ federation:
   discoveryUrl: https://osg-htc.org
 
 # Sets the hostname to advertise to the director with, and use for external-dns
-hostname: cache.example.net
+hostname: "HOSTNAME HAS NOT BEEN SPECIFIED"
+# optional
 issuerUrl: ""
+# optional
 xrootdSitename: ""
 
 cache:
-  volume: ""
+  dataVolume: "DATA VOLUME HAS NOT BEEN SPECIFIED"
 
 # This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
 image:
@@ -32,22 +34,38 @@ logging:
     # Scitokens: trace
   persistence:
     enabled: true
-    volume: ""
+    rotateCount: 10
+    # if existingClaim is specified, an existing PVC will be used; otherwise, one will be created according to the parameters below
+    existingClaim: ""
+    size: 10Gi
+    storageClass: ""
 
 # These are the names of Secrets
 secrets:
   # This should have a single "issuer.pem"
-  issuerKey: ""
+  issuerKey: "ISSUER KEY HAS NOT BEEN SPECIFIED"
   # The SSL/TLS certificate and key (tls.crt, tls.key)
-  sslCertificate: ""
+  sslCertificate: "SSL CERT HAS NOT BEEN SPECIFIED"
   # The admin password for the webserver
-  webserverPassword: ""
+  webserverPassword: "WEBSERVER PASSWORD HAS NOT BEEN SPECIFIED"
 
 # To persist monitoring information, you must have a volume for it; the recommended size is 20 GiB
-monitoringVolume: ""
+monitoring:
+  persistence:
+    enabled: true
+    # if existingClaim is specified, an existing PVC will be used; otherwise, one will be created according to the parameters below
+    existingClaim: ""
+    size: 20Gi
+    storageClass: ""
 
+namespaceKey:
+  persistence:
+    enabled: true
+    # if existingClaim is specified, an existing PVC will be used; otherwise, one will be created according to the parameters below
+    existingClaim: ""
+    size: 10Mi
+    storageClass: ""
 # To persist the namespace key, you must have a volume for it
-namespaceKeyVolume: ""
 
 
 podAnnotations: {}

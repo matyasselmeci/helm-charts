@@ -57,14 +57,10 @@ spec:
             - name: logging-volume
               mountPath: /var/log/pelican
             {{- end }}
-            {{- if .Values.monitoringVolume }}
             - name: monitoring-volume
               mountPath: /var/lib/pelican/monitoring/data
-            {{- end }}
-            {{- if .Values.namespaceKeyVolume }}
             - name: namespace-key
               mountPath: /etc/pelican/jwks
-            {{- end }}
             - name: ssl-certificate
               mountPath: /etc/pelican/cert-orig
             - name: webserver-password
@@ -109,7 +105,7 @@ spec:
       volumes:
         - name: cache-data
           persistentVolumeClaim:
-            claimName: {{ .Values.cache.volume }}
+            claimName: {{ .Values.cache.dataVolume }}
         - name: default-config
           configMap:
             name: {{ include "pelican-cache.fullname" . }}-default
@@ -129,19 +125,23 @@ spec:
         {{- if .Values.logging.persistence.enabled }}
         - name: logging-volume
           persistentVolumeClaim:
-            claimName: {{ .Values.logging.persistence.volume }}
+            claimName: {{ .Values.logging.persistence.existingClaim | default (print (include "pelican-cache.fullname" .) "-logging") }}
         - name: logrotate-config
           configMap: {{ include "pelican-cache.fullname" . }}-logrotate
         {{- end }}
-        {{- with .Values.monitoringVolume }}
         - name: monitoring-volume
+        {{- if .Values.monitoring.persistence.enabled }}
           persistentVolumeClaim:
-            claimName: {{ . }}
+            claimName: {{ .Values.monitoring.persistence.existingClaim | default (print (include "pelican-cache.fullname" .) "-monitoring") }}
+        {{- else }}
+          emptyDir: {}
         {{- end }}
-        {{- with .Values.namespaceKeyVolume }}
         - name: namespace-key
+        {{- if .Values.namespaceKey.persistence.enabled }}
           persistentVolumeClaim:
-            claimName: {{ . }}
+            claimName: {{ .Values.namespaceKey.persistence.existingClaim | default (print (include "pelican-cache.fullname" $) "-namespacekey") }}
+        {{- else }}
+          emptyDir: {}
         {{- end }}
         - name: ssl-certificate
           secret:
