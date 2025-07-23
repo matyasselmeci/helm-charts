@@ -99,14 +99,14 @@ resources: {}
 sleepForever: false
 
 # Additional volumes on the output Deployment definition.
-volumes: []
+extraVolumes: []
 # - name: foo
 #   secret:
 #     secretName: mysecret
 #     optional: false
 
-# Additional volumeMounts on the output Deployment definition.
-volumeMounts: []
+# Additional extraVolumeMounts on the output Deployment definition.
+extraVolumeMounts: []
 # - name: foo
 #   mountPath: "/etc/foo"
 #   readOnly: true
